@@ -1,80 +1,100 @@
-import { access, readJson, writeJson } from 'fs-extra';
-import { ChannelIdentifier, EmoteData } from './types';
-import { isChannelThrow } from './util';
+import { access, readJson, writeJson } from 'fs-extra'
+import { ChannelIdentifier, EmoteData } from './types'
+import { isChannelThrow, uniqueArr } from './util'
 
-async function loadCache(fileName: string) {
-
-    try {
-        await access(`./cache/${fileName}.json`);
-
-    } catch(e) {
-        await writeJson(`./cache/${fileName}.json`, { data: [] });
-        return [];
-    }
-
-    let { data, timestamp } = await readJson(`./cache/${fileName}.json`);
-
-    //once a day
-    if (timestamp + (1000 * 60 * 60 * 24) < new Date().getTime()) {
-        //todo trigger flag to reload cache
-    }
-
-    return data;
-
+export interface FsResponse<T> {
+	data: T
+	timestamp: number
 }
 
-async function writeCache(fileName: string, data: any[]) {
+export async function loadCacheRaw<T = {}>(
+	fileName: string
+): Promise<T | null> {
+	try {
+		await access(`./cache/${fileName}.json`)
+	} catch (e) {
+		return null
+	}
 
-    await writeJson(`./cache/${fileName}.json`, { data, timestamp: new Date().getTime() });
-
+	return await readJson(`./cache/${fileName}.json`)
 }
 
-export async function loadIdentifiersCache(): Promise<ChannelIdentifier[]> {
+export async function loadCache<T = []>(
+	fileName: string,
+	def: T
+): Promise<FsResponse<T>> {
+	let file = await loadCacheRaw<FsResponse<T>>(fileName)
 
-    return loadCache(`identifiers`);
-    
+	if (!file) {
+		return { data: def, timestamp: 0 }
+	}
+
+	return file
 }
 
-export async function saveIdentifiersCache(cache: ChannelIdentifier[]) {
-
-    await writeCache(`identifiers`, cache);
-
+async function writeCache(fileName: string, data: any) {
+	await writeJson(`./cache/${fileName}.json`, { data, timestamp: Date.now() })
 }
 
-export async function loadChannels(): Promise<string[]> {
-
-    return loadCache(`channels`);
-    
+export async function loadGlobalCache(): Promise<FsResponse<EmoteData[]>> {
+	return loadCache(`global`, [])
 }
 
-export async function saveChannels(cache: string[]) {
+export async function loadChannelCache(
+	channel: string
+): Promise<FsResponse<EmoteData[]>> {
+	isChannelThrow(channel)
 
-    await writeCache(`channels`, cache);
+	return loadCache(`channel.${channel}`, [])
 }
 
-export async function loadChannelCache(channel: string): Promise<EmoteData[]> {
-
-    isChannelThrow(channel);
-
-    return loadCache(`channel.${channel}`);
-    
-}
-
-export async function saveChannelCache(channel: string, cache: EmoteData[]) {
-
-    isChannelThrow(channel);
-
-    await writeCache(`channel.${channel}`, cache);
-}
-
-export async function loadGlobalCache(): Promise<EmoteData[]> {
-
-    return loadCache(`global`);
-    
+export async function loadIdentifierCache(
+	channel: string
+): Promise<FsResponse<ChannelIdentifier | null>> {
+	return loadCache(`identifier.${channel}`, null)
 }
 
 export async function saveGlobalCache(cache: EmoteData[]) {
+	await writeCache(`global`, cache)
+}
 
-    await writeCache(`global`, cache);
+export async function saveChannelCache(channel: string, cache: EmoteData[]) {
+	isChannelThrow(channel)
 
+	await writeCache(`channel.${channel}`, cache)
+}
+
+export async function saveIdentifierCache(
+	channel: string,
+	cache: ChannelIdentifier
+) {
+	await writeCache(`identifier.${channel}`, cache)
+}
+
+export interface AllChannelData {
+	emotes: FsResponse<EmoteData[]>
+	identifier: FsResponse<ChannelIdentifier | null>
+}
+
+export interface AllChannelDataCollection {
+	[channel: string]: AllChannelData
+}
+
+export async function loadChannels(): Promise<AllChannelDataCollection | null> {
+	const data = await loadCacheRaw<{ channels: string[] }>(`channels`)
+
+	let foundData: AllChannelDataCollection = {}
+
+	if (!data) {
+		return null
+	} else {
+		for (const chan of uniqueArr(data.channels)) {
+			foundData[chan] = {
+				emotes: await loadChannelCache(chan),
+				identifier: await loadIdentifierCache(chan),
+			}
+		}
+
+		return foundData
+	}
 }

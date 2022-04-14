@@ -1,12 +1,11 @@
 const { initCache, spliceMessage } = require('.')
+// import { initCache, spliceMessage } from './src'
 
 ;(async () => {
-    try {
-        await initCache(['xqcow'])
+	
+	await initCache(['xqcow'])
 
-        let message = spliceMessage('OMEGALUL Clap perfect', 'xqcow')
-        console.log('OMEGALUL Clap perfect', message)
-    } catch (e) {
-        console.error(e)
-    }
+	let message = spliceMessage('EZ Clap too good', 'xqcow')
+	console.log(message)
+
 })()

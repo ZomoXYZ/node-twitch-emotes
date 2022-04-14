@@ -1,6 +1,8 @@
 {
 	"scripts": {
-		"prettier": "prettier --write ."
+		"prettier": "prettier --write .",
+		"build": "tsc",
+		"preinstall": "npm run build"
 	},
 	"dependencies": {
 		"@types/fs-extra": "^9.0.13",

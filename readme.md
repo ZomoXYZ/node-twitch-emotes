@@ -1,11 +1,13 @@
 # node-twitch-emotes
 
+`npm i ZomoXYZ/node-twitch-emotes`
+
 ## example
 
 simple
 
 ```ts
-import { initCache, spliceMessage } from '.'
+import { initCache, spliceMessage } from 'node-twitch-emotes'
     
 await initCache(['xqcow'])
 
@@ -18,7 +20,7 @@ console.log(message)
 advanced
 
 ```ts
-import { initCache, spliceMessage } from '.'
+import { initCache, spliceMessage } from 'node-twitch-emotes'
     
 await initCache(['xqcow'])
 

@@ -29,6 +29,8 @@ export async function initCache(channels: string[] = [], settings: SettingsOptio
     if (Initiated) return
     Initiated = true
 
+	channels = channels.map(ch => ch.toLowerCase());
+
 	setSettings(settings);
 
     const globalData = await loadGlobalCache()
@@ -84,6 +86,8 @@ export async function reloadGlobalEmotes() {
 }
 
 export async function reloadChannel(channel: string) {
+	channel = channel.toLowerCase();
+	
     const { data: emotes, ...rateEmotes } = await channelEmotes(channel)
     const { data: identifier, ...rateIdentifier } = await channelIdentifier(channel)
     console.log('RATE', 'emotes', rateEmotes, 'identifier', rateIdentifier)
@@ -99,6 +103,7 @@ export async function reloadChannel(channel: string) {
 }
 
 export function getChannel(channel: string) {
+	channel = channel.toLowerCase()
     return {
         identifier: ChannelIdentifiersCache[channel],
         emotes: ChannelEmotesCache[channel],
@@ -115,6 +120,7 @@ export function getChannel(channel: string) {
  */
 export function getEmote(emote: string, channel?: string): EmoteData | false | null {
     if (channel) {
+		channel = channel.toLowerCase();
         const emotes = ChannelEmotesCache[channel]
         if (emotes) {
             const emoteData = emotes.find(e => e.code === emote)

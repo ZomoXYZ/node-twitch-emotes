@@ -7,36 +7,33 @@ import { correctServices, isChannelThrow, Services } from './util'
 
 export type ApiResponseTypes = ChannelIdentifier | EmoteData[]
 export interface ApiResponse<T> {
-	limit: string | null
-	remaining: string | null
-	reset: string | null
-	data: T | null
+    limit: string | null
+    remaining: string | null
+    reset: string | null
+    data: T | null
 }
 
 async function handleResponse<T>(resp: Response): Promise<ApiResponse<T>> {
+    let data = await resp.json()
 
-	let data = await resp.json();
-
-	return {
-		limit: resp.headers.get('X-Ratelimit-Limit'),
-		remaining: resp.headers.get('X-Ratelimit-Remaining'),
-		reset: resp.headers.get('X-Ratelimit-Reset'),
-		data: data.error ? null : data
-	}
+    return {
+        limit: resp.headers.get('X-Ratelimit-Limit'),
+        remaining: resp.headers.get('X-Ratelimit-Remaining'),
+        reset: resp.headers.get('X-Ratelimit-Reset'),
+        data: data.error ? null : data,
+    }
 }
 
 /**
  * @returns \{ data }: url to the emote image, or null if not found
  */
-export function handleProxyResponse(
-	resp: Response
-): ApiResponse<string> {
-	return {
-		limit: resp.headers.get('X-Ratelimit-Limit'),
-		remaining: resp.headers.get('X-Ratelimit-Remaining'),
-		reset: resp.headers.get('X-Ratelimit-Reset'),
-		data: resp.status === 307 ? resp.url : null,
-	}
+export function handleProxyResponse(resp: Response): ApiResponse<string> {
+    return {
+        limit: resp.headers.get('X-Ratelimit-Limit'),
+        remaining: resp.headers.get('X-Ratelimit-Remaining'),
+        reset: resp.headers.get('X-Ratelimit-Reset'),
+        data: resp.status === 307 ? resp.url : null,
+    }
 }
 
 /**
@@ -45,12 +42,10 @@ export function handleProxyResponse(
  *
  * Math pattern `/^[^\.]+(all|(\.?twitch|\.?7tv|\.?bttv|\.?ffz)+)$/`
  */
-export const globalEmotes = (
-	services: Services = 'all'
-): Promise<ApiResponse<EmoteData[]>> =>
-	fetch(
-		`https://emotes.adamcy.pl/v1/global/emotes/${correctServices(services)}`
-	).then(res => handleResponse<EmoteData[]>(res))
+export const globalEmotes = (services: Services = 'all'): Promise<ApiResponse<EmoteData[]>> =>
+    fetch(`https://emotes.adamcy.pl/v1/global/emotes/${correctServices(services)}`).then(res =>
+        handleResponse<EmoteData[]>(res)
+    )
 
 /**
  * Returns channel emotes
@@ -60,25 +55,23 @@ export const globalEmotes = (
  * Math pattern `/^[^\.]+(all|(\.?twitch|\.?7tv|\.?bttv|\.?ffz)+)$/`
  */
 export const channelEmotes = (
-	channel: string,
-	services: Services = 'all'
+    channel: string,
+    services: Services = 'all'
 ): Promise<ApiResponse<EmoteData[]>> =>
-	fetch(
-		`https://emotes.adamcy.pl/v1/channel/${isChannelThrow(
-			channel
-		)}/emotes/${correctServices(services)}`
-	).then(res => handleResponse<EmoteData[]>(res))
+    fetch(
+        `https://emotes.adamcy.pl/v1/channel/${isChannelThrow(channel)}/emotes/${correctServices(
+            services
+        )}`
+    ).then(res => handleResponse<EmoteData[]>(res))
 
 /**
  * Returns basic identifiers (id, login, display name)
  * @param channel It's recommended to provide twitch id, but twitch login is also supported
  */
-export const channelIdentifier = (
-	channel: string
-): Promise<ApiResponse<ChannelIdentifier>> =>
-	fetch(
-		`https://emotes.adamcy.pl/v1/channel/${isChannelThrow(channel)}/id`
-	).then(res => handleResponse<ChannelIdentifier>(res))
+export const channelIdentifier = (channel: string): Promise<ApiResponse<ChannelIdentifier>> =>
+    fetch(`https://emotes.adamcy.pl/v1/channel/${isChannelThrow(channel)}/id`).then(res =>
+        handleResponse<ChannelIdentifier>(res)
+    )
 
 /**
  * Proxies directly to emote's URL.
@@ -90,11 +83,11 @@ export const channelIdentifier = (
  * @param services Possible values: all or any combination of: twitch, 7tv, bttv, ffz combined using dots (e.g. twitch.7tv)
  */
 export const proxyChannelEmote = (
-	channel: string,
-	services: Services = 'all'
+    channel: string,
+    services: Services = 'all'
 ): Promise<ApiResponse<string | null>> =>
-	fetch(
-		`https://emotes.adamcy.pl/v1/channel/${isChannelThrow(
-			channel
-		)}/emotes/${correctServices(services)}/proxy`
-	).then(res => handleProxyResponse(res))
+    fetch(
+        `https://emotes.adamcy.pl/v1/channel/${isChannelThrow(channel)}/emotes/${correctServices(
+            services
+        )}/proxy`
+    ).then(res => handleProxyResponse(res))

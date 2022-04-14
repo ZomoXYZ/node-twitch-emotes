@@ -8,29 +8,29 @@ export * from './types'
 export * from './util'
 
 /**
- * 
+ *
  * @param callback default callback is `highestQuality`
- * @returns 
+ * @returns
  */
 export function spliceMessage<T>(
-	message: string,
-	channel: string,
-	callback: (emote: EmoteData) => (string | T) = highestQuality
+    message: string,
+    channel: string,
+    callback: (emote: EmoteData) => string | T = highestQuality
 ): (string | T)[] {
-	const messageSpl: string[] = message.split(' '),
-		arr: (string | T)[] = []
+    const messageSpl: string[] = message.split(' '),
+        arr: (string | T)[] = []
 
-	for (let i = 0; i < messageSpl.length; i++) {
-		const word = messageSpl[i]
+    for (let i = 0; i < messageSpl.length; i++) {
+        const word = messageSpl[i]
 
-		let emote = getEmote(word, channel)
+        let emote = getEmote(word, channel)
 
-		if (emote) {
-			arr[i] = callback(emote)
-		} else {
-			arr[i] = word
-		}
-	}
+        if (emote) {
+            arr[i] = callback(emote)
+        } else {
+            arr[i] = word
+        }
+    }
 
-	return arr
+    return arr
 }

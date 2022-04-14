@@ -1,5 +1,5 @@
 import { channelEmotes, channelIdentifier, globalEmotes } from './api'
-import { ChannelIdentifier, EmoteData } from './types'
+import { ChannelIdentifier, EmoteData, SettingsOptions } from './types'
 import { loadChannels, loadGlobalCache, saveChannelCache, saveGlobalCache } from './cache_fs'
 import { repeat } from './util'
 
@@ -7,14 +7,30 @@ const RefreshTimeout = 1000 * 60 * 60 * 24 // 1 day
 
 var GlobalEmotesCache: EmoteData[] = [],
     ChannelEmotesCache: { [channel: string]: EmoteData[] } = {},
-    ChannelIdentifiersCache: { [channel: string]: ChannelIdentifier } = {}
+    ChannelIdentifiersCache: { [channel: string]: ChannelIdentifier } = {},
+	Initiated = false
+
+const Settings = {
+	autoRefresh: true
+}
+
+function setSettings(adjustSettings: SettingsOptions) {
+	if (adjustSettings.autoRefresh !== undefined) {
+		Settings.autoRefresh = adjustSettings.autoRefresh
+	}
+}
 
 /**
  *
  * @param channels ensure specific channels are loaded
  * @returns
  */
-export async function initCache(channels: string[] = []) {
+export async function initCache(channels: string[] = [], settings: SettingsOptions = {}) {
+    if (Initiated) return
+    Initiated = true
+
+	setSettings(settings);
+
     const globalData = await loadGlobalCache()
 
     if (globalData.data.length) {
@@ -22,7 +38,8 @@ export async function initCache(channels: string[] = []) {
     }
 
     //reload global once a day
-    repeat(RefreshTimeout, globalData.timestamp, () => reloadGlobalEmotes())
+    if (Settings.autoRefresh)
+        repeat(RefreshTimeout, globalData.timestamp, () => reloadGlobalEmotes())
 
     const channelsData = await loadChannels()
 
@@ -49,7 +66,7 @@ export async function initCache(channels: string[] = []) {
         }
 
         //reload channel data once a day
-        repeat(RefreshTimeout, timestamp, () => reloadChannel(chan))
+        if (Settings.autoRefresh) repeat(RefreshTimeout, timestamp, () => reloadChannel(chan))
     }
 }
 

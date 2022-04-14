@@ -4,6 +4,8 @@
 
 ## example
 
+(see `test.js` for a ready and functional example)
+
 simple
 
 ```ts

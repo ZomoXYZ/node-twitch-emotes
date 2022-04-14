@@ -30,8 +30,8 @@ export function uniqueArr<T>(arr: T | T[]): T[] {
 
 export const highestQuality = ({ urls }: EmoteData) =>
 	urls.length
-		? urls.sort((a, b) => parseInt(b.size[0]) - parseInt(a.size[0]))[0]
-		: null
+		? urls.sort((a, b) => parseInt(b.size[0]) - parseInt(a.size[0]))[0].url
+		: ''
 
 export function repeat(every: number, starting: number, callback: () => void) {
 	function afterTimeout() {

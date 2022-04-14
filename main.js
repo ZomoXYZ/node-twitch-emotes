@@ -1,13 +1,12 @@
-const { highestQuality, initCache, spliceMessage } = require('.');
+const { initCache, spliceMessage } = require('.');
 
 (async () => {
 	try {
 		await initCache(['xqcow'])
 
-		spliceMessage('OMEGALUL Clap', 'xqcow', emote => {
-			console.log(emote)
-			return highestQuality(emote)
-		})
+		let message = spliceMessage('OMEGALUL Clap perfect', 'xqcow')
+		console.log('OMEGALUL Clap perfect', message)
+
 	} catch(e) {
 		console.error(e)
 	}

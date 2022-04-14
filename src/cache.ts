@@ -22,8 +22,6 @@ var GlobalEmotesCache: EmoteData[] = [],
 export async function initCache(channels: string[] = []) {
 	const globalData = await loadGlobalCache()
 
-	console.log('got global cache', globalData)
-
 	if (globalData.data.length) {
 		GlobalEmotesCache = globalData.data
 	}
@@ -63,7 +61,7 @@ export async function initCache(channels: string[] = []) {
 
 export async function reloadGlobalEmotes() {
 	const { data: emotes, ...rate } = await globalEmotes()
-	console.log('global emotes', rate)
+	console.log('RATE', 'global emotes', rate)
 
 	if (!emotes) {
 		throw `Error fetching global emotes`
@@ -79,7 +77,7 @@ export async function reloadChannel(channel: string) {
 	const { data: identifier, ...rateIdentifier } = await channelIdentifier(
 		channel
 	)
-	console.log('emotes', rateEmotes, 'identifier', rateIdentifier)
+	console.log('RATE', 'emotes', rateEmotes, 'identifier', rateIdentifier)
 
 	if (!emotes || !identifier) {
 		throw `Error fetching channel data for ${channel}`

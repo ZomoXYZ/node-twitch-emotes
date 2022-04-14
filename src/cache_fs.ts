@@ -21,13 +21,10 @@ export async function loadCacheRaw<T = {}>(
 	await ensureCacheFolder()
 
 	try {
-		console.log('try to read cache', fileName)
 		await access(`./cache/${fileName}.json`)
 	} catch (e) {
-		console.log('failed to read cache', fileName)
 		return null
 	}
-	console.log('successfully read cache', fileName)
 
 	return await readJson(`./cache/${fileName}.json`)
 }
@@ -37,8 +34,6 @@ export async function loadCache<T = []>(
 	def: T
 ): Promise<FsResponse<T>> {
 	let file = await loadCacheRaw<FsResponse<T>>(fileName)
-
-	console.log('file', file)
 
 	if (!file) {
 		return { data: def, timestamp: 0 }
@@ -80,22 +75,9 @@ export async function loadIdentifierCache(
 }
 
 export async function saveGlobalCache(cache: EmoteData[]) {
-	console.log('about to write global cache')
 	await writeCache(`global`, cache)
 }
 
-// export async function saveChannelCache(channel: string, cache: EmoteData[]) {
-// 	isChannelThrow(channel)
-
-// 	await writeCache(`channel.${channel}`, cache)
-// }
-
-// export async function saveIdentifierCache(
-// 	channel: string,
-// 	cache: ChannelIdentifier
-// ) {
-// 	await writeCache(`identifier.${channel}`, cache)
-// }
 export async function saveChannelCache(
 	channel: string,
 	emotes: EmoteData[],
@@ -124,8 +106,6 @@ export interface AllChannelDataCollection {
 
 export async function loadChannels(): Promise<AllChannelDataCollection | null> {
 	const channels = await loadChannelList()
-
-	console.log('channels', channels)
 
 	let foundData: AllChannelDataCollection = {}
 

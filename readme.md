@@ -29,5 +29,5 @@ let message = spliceMessage('EZ Clap too good', 'xqcow', emote => {
 })
 console.log(message)
 
-// [ 'emote:EZ', 'emote:Clap', 'too', 'good' 
+// [ 'emote:EZ', 'emote:Clap', 'too', 'good' ]
 ```

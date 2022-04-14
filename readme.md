@@ -7,7 +7,7 @@
 simple
 
 ```ts
-import { initCache, spliceMessage } from 'node-twitch-emotes'
+import { initCache, spliceMessage } from 'twitch-emotes'
     
 await initCache(['xqcow'])
 
@@ -20,7 +20,7 @@ console.log(message)
 advanced
 
 ```ts
-import { initCache, spliceMessage } from 'node-twitch-emotes'
+import { initCache, spliceMessage } from 'twitch-emotes'
     
 await initCache(['xqcow'])
 

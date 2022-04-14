@@ -32,6 +32,16 @@ export async function loadCache<T = []>(
 	return file
 }
 
+export async function loadChannelList() {
+	const data = await loadCacheRaw<{ channels: string[] }>(`channels`)
+	if (data) return data.channels
+	else return []
+}
+
+export async function saveChannelList(channels: string[]) {
+	return await writeJson('channels', { channels: uniqueArr(channels) })
+}
+
 async function writeCache(fileName: string, data: any) {
 	await writeJson(`./cache/${fileName}.json`, { data, timestamp: Date.now() })
 }
@@ -58,17 +68,33 @@ export async function saveGlobalCache(cache: EmoteData[]) {
 	await writeCache(`global`, cache)
 }
 
-export async function saveChannelCache(channel: string, cache: EmoteData[]) {
+// export async function saveChannelCache(channel: string, cache: EmoteData[]) {
+// 	isChannelThrow(channel)
+
+// 	await writeCache(`channel.${channel}`, cache)
+// }
+
+// export async function saveIdentifierCache(
+// 	channel: string,
+// 	cache: ChannelIdentifier
+// ) {
+// 	await writeCache(`identifier.${channel}`, cache)
+// }
+export async function saveChannelCache(
+	channel: string,
+	emotes: EmoteData[],
+	identifier: ChannelIdentifier
+) {
 	isChannelThrow(channel)
 
-	await writeCache(`channel.${channel}`, cache)
-}
+	await writeCache(`channel.${channel}`, emotes)
+	await writeCache(`identifier.${channel}`, identifier)
 
-export async function saveIdentifierCache(
-	channel: string,
-	cache: ChannelIdentifier
-) {
-	await writeCache(`identifier.${channel}`, cache)
+	let channels = await loadChannelList()
+	if (!channels.includes(channel)) {
+		channels.push(channel)
+		await saveChannelList(channels)
+	}
 }
 
 export interface AllChannelData {
@@ -81,14 +107,14 @@ export interface AllChannelDataCollection {
 }
 
 export async function loadChannels(): Promise<AllChannelDataCollection | null> {
-	const data = await loadCacheRaw<{ channels: string[] }>(`channels`)
+	const channels = await loadChannelList()
 
 	let foundData: AllChannelDataCollection = {}
 
-	if (!data) {
+	if (!channels.length) {
 		return null
 	} else {
-		for (const chan of uniqueArr(data.channels)) {
+		for (const chan of uniqueArr(channels)) {
 			foundData[chan] = {
 				emotes: await loadChannelCache(chan),
 				identifier: await loadIdentifierCache(chan),

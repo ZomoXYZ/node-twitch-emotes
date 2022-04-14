@@ -19,8 +19,10 @@ var GlobalEmotesCache: EmoteData[] = [],
  * @param channels ensure specific channels are loaded
  * @returns
  */
-export async function initCache(channels?: string[]) {
+export async function initCache(channels: string[] = []) {
 	const globalData = await loadGlobalCache()
+
+	console.log('got global cache', globalData)
 
 	if (globalData.data.length) {
 		GlobalEmotesCache = globalData.data
@@ -29,35 +31,43 @@ export async function initCache(channels?: string[]) {
 	//reload global once a day
 	repeat(RefreshTimeout, globalData.timestamp, () => reloadGlobalEmotes())
 
-	const channelsData = await loadChannels()
+	const channelsData = await loadChannels();
 
-	if (!channelsData) {
-		return
-	}
+	let foundChannels: string[] = [];
+	if (channelsData)
+		foundChannels = Object.keys(channelsData)
 
-	for (const chan in channelsData) {
-		const { emotes, identifier } = channelsData[chan]
+	const allChannels = [...foundChannels, ...channels]
 
-		if (emotes.data.length) {
-			ChannelEmotesCache[chan] = emotes.data
-		}
+	for (const chan of allChannels) {
+		let timestamp = 0;
 
-		if (identifier.data) {
-			ChannelIdentifiersCache[chan] = identifier.data
+		if (channelsData && chan in channelsData) {
+			const { emotes, identifier } = channelsData[chan]
+
+			timestamp = Math.min(emotes.timestamp, identifier.timestamp);
+
+			if (emotes.data.length) {
+				ChannelEmotesCache[chan] = emotes.data
+			}
+
+			if (identifier.data) {
+				ChannelIdentifiersCache[chan] = identifier.data
+			}
 		}
 
 		//reload channel data once a day
-		repeat(RefreshTimeout, emotes.timestamp, () => reloadChannel(chan))
+		repeat(RefreshTimeout, timestamp, () => reloadChannel(chan))
 	}
-
-	if (channels)
-		for (const chan of channels)
-			if (!(chan in channelsData)) await reloadChannel(chan)
 }
 
 export async function reloadGlobalEmotes() {
 	const { data: emotes, ...rate } = await globalEmotes()
-	console.log(rate)
+	console.log('global emotes', rate)
+
+	if (!emotes) {
+		throw `Error fetching global emotes`
+	}
 
 	GlobalEmotesCache = emotes
 
@@ -69,7 +79,11 @@ export async function reloadChannel(channel: string) {
 	const { data: identifier, ...rateIdentifier } = await channelIdentifier(
 		channel
 	)
-	console.log(rateEmotes, rateIdentifier)
+	console.log('emotes', rateEmotes, 'identifier', rateIdentifier)
+
+	if (!emotes || !identifier) {
+		throw `Error fetching channel data for ${channel}`
+	}
 
 	ChannelEmotesCache[channel] = emotes
 	ChannelIdentifiersCache[channel] = identifier
@@ -79,28 +93,7 @@ export async function reloadChannel(channel: string) {
 		ChannelEmotesCache[channel],
 		ChannelIdentifiersCache[channel]
 	)
-
-	// await saveChannelCache(channel, ChannelEmotesCache[channel])
-	// await saveIdentifierCache(channel, ChannelIdentifiersCache[channel])
 }
-
-// export async function reloadChannelEmotes(channel: string) {
-// 	const { data: emotes, ...rate } = await channelEmotes(channel)
-// 	console.log(rate)
-
-// 	ChannelEmotesCache[channel] = emotes
-
-// 	await saveChannelCache(channel, ChannelEmotesCache[channel])
-// }
-
-// export async function reloadChannelIdentifier(channel: string) {
-// 	const { data: identifier, ...rate } = await channelIdentifier(channel)
-// 	console.log(rate)
-
-// 	ChannelIdentifiersCache[channel] = identifier
-
-// 	await saveIdentifierCache(channel, ChannelIdentifiersCache[channel])
-// }
 
 export function getChannel(channel: string) {
 	return {

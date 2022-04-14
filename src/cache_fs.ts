@@ -1,4 +1,4 @@
-import { access, readJson, writeJson } from 'fs-extra'
+import { access, mkdir, readJson, writeJson } from 'fs-extra'
 import { ChannelIdentifier, EmoteData } from './types'
 import { isChannelThrow, uniqueArr } from './util'
 
@@ -7,14 +7,27 @@ export interface FsResponse<T> {
 	timestamp: number
 }
 
+export async function ensureCacheFolder() {
+	try {
+		await access(`./cache`)
+	} catch (e) {
+		await mkdir(`./cache`)
+	}
+}
+
 export async function loadCacheRaw<T = {}>(
 	fileName: string
 ): Promise<T | null> {
+	await ensureCacheFolder()
+
 	try {
+		console.log('try to read cache', fileName)
 		await access(`./cache/${fileName}.json`)
 	} catch (e) {
+		console.log('failed to read cache', fileName)
 		return null
 	}
+	console.log('successfully read cache', fileName)
 
 	return await readJson(`./cache/${fileName}.json`)
 }
@@ -25,6 +38,8 @@ export async function loadCache<T = []>(
 ): Promise<FsResponse<T>> {
 	let file = await loadCacheRaw<FsResponse<T>>(fileName)
 
+	console.log('file', file)
+
 	if (!file) {
 		return { data: def, timestamp: 0 }
 	}
@@ -32,18 +47,18 @@ export async function loadCache<T = []>(
 	return file
 }
 
+async function writeCache(fileName: string, data: any) {
+	await ensureCacheFolder()
+	await writeJson(`./cache/${fileName}.json`, { data, timestamp: Date.now() })
+}
+
 export async function loadChannelList() {
-	const data = await loadCacheRaw<{ channels: string[] }>(`channels`)
-	if (data) return data.channels
-	else return []
+	const data = await loadCache<string[]>(`channels`, [])
+	return data.data;
 }
 
 export async function saveChannelList(channels: string[]) {
-	return await writeJson('channels', { channels: uniqueArr(channels) })
-}
-
-async function writeCache(fileName: string, data: any) {
-	await writeJson(`./cache/${fileName}.json`, { data, timestamp: Date.now() })
+	return await writeCache('channels', uniqueArr(channels))
 }
 
 export async function loadGlobalCache(): Promise<FsResponse<EmoteData[]>> {
@@ -65,6 +80,7 @@ export async function loadIdentifierCache(
 }
 
 export async function saveGlobalCache(cache: EmoteData[]) {
+	console.log('about to write global cache')
 	await writeCache(`global`, cache)
 }
 
@@ -108,6 +124,8 @@ export interface AllChannelDataCollection {
 
 export async function loadChannels(): Promise<AllChannelDataCollection | null> {
 	const channels = await loadChannelList()
+
+	console.log('channels', channels)
 
 	let foundData: AllChannelDataCollection = {}
 

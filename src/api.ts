@@ -1,24 +1,27 @@
-import { Response } from 'node-fetch'
+import fetch, { Response } from 'node-fetch'
 import { ChannelIdentifier, EmoteData } from './types'
 import { correctServices, isChannelThrow, Services } from './util'
 
 //TODO use node-fetch
-declare function fetch(url: string): Promise<Response>
+// declare function fetch(url: string): Promise<Response>
 
 export type ApiResponseTypes = ChannelIdentifier | EmoteData[]
 export interface ApiResponse<T> {
 	limit: string | null
 	remaining: string | null
 	reset: string | null
-	data: T
+	data: T | null
 }
 
 async function handleResponse<T>(resp: Response): Promise<ApiResponse<T>> {
+
+	let data = await resp.json();
+
 	return {
 		limit: resp.headers.get('X-Ratelimit-Limit'),
 		remaining: resp.headers.get('X-Ratelimit-Remaining'),
 		reset: resp.headers.get('X-Ratelimit-Reset'),
-		data: await resp.json(),
+		data: data.error ? null : data
 	}
 }
 
@@ -27,7 +30,7 @@ async function handleResponse<T>(resp: Response): Promise<ApiResponse<T>> {
  */
 export function handleProxyResponse(
 	resp: Response
-): ApiResponse<string | null> {
+): ApiResponse<string> {
 	return {
 		limit: resp.headers.get('X-Ratelimit-Limit'),
 		remaining: resp.headers.get('X-Ratelimit-Remaining'),
@@ -35,17 +38,6 @@ export function handleProxyResponse(
 		data: resp.status === 307 ? resp.url : null,
 	}
 }
-
-/**
- * Returns basic identifiers (id, login, display name)
- * @param channel It's recommended to provide twitch id, but twitch login is also supported
- */
-export const channelIdentifier = (
-	channel: string
-): Promise<ApiResponse<ChannelIdentifier>> =>
-	fetch(
-		`https://emotes.adamcy.pl/v1/channel/${isChannelThrow(channel)}/id`
-	).then(res => handleResponse<ChannelIdentifier>(res))
 
 /**
  * Returns global emotes
@@ -76,6 +68,17 @@ export const channelEmotes = (
 			channel
 		)}/emotes/${correctServices(services)}`
 	).then(res => handleResponse<EmoteData[]>(res))
+
+/**
+ * Returns basic identifiers (id, login, display name)
+ * @param channel It's recommended to provide twitch id, but twitch login is also supported
+ */
+export const channelIdentifier = (
+	channel: string
+): Promise<ApiResponse<ChannelIdentifier>> =>
+	fetch(
+		`https://emotes.adamcy.pl/v1/channel/${isChannelThrow(channel)}/id`
+	).then(res => handleResponse<ChannelIdentifier>(res))
 
 /**
  * Proxies directly to emote's URL.

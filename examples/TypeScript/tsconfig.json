@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "esnext",
+        "moduleResolution": "node",
+        "outDir": "../JavaScript",
+        "strict": true
+    },
+    "exclude": ["../../lib"]
+}

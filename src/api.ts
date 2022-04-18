@@ -30,7 +30,7 @@ async function handleResponse<T>(resp: Response): Promise<ApiResponse<T>> {
 /**
  * @returns \{ data }: url to the emote image, or null if not found
  */
-export function handleProxyResponse(resp: Response): ApiResponse<string> {
+function handleProxyResponse(resp: Response): ApiResponse<string> {
     return {
         limit: resp.headers.get('X-Ratelimit-Limit'),
         remaining: resp.headers.get('X-Ratelimit-Remaining'),

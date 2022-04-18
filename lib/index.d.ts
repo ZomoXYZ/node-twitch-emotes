@@ -1,5 +1,5 @@
 import { EmoteData } from './types';
-export { ApiResponseTypes, ApiResponse } from './api';
+export { ApiResponseTypes, ApiResponseHeaders, ApiResponse } from './api';
 export * from './cache';
 export * from './types';
 export * from './util';

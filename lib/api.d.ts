@@ -1,4 +1,3 @@
-import { Response } from 'node-fetch';
 import { ChannelIdentifier, EmoteData } from './types';
 import { Services } from './util';
 export declare type ApiResponseTypes = ChannelIdentifier | EmoteData[];
@@ -10,7 +9,6 @@ export interface ApiResponseHeaders {
 export interface ApiResponse<T> extends ApiResponseHeaders {
     data: T | null;
 }
-export declare function handleProxyResponse(resp: Response): ApiResponse<string>;
 export declare const globalEmotes: (services?: Services) => Promise<ApiResponse<EmoteData[]>>;
 export declare const channelEmotes: (channel: string, services?: Services) => Promise<ApiResponse<EmoteData[]>>;
 export declare const channelIdentifier: (channel: string) => Promise<ApiResponse<ChannelIdentifier>>;

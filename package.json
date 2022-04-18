@@ -1,10 +1,10 @@
 {
     "main": "lib/index.js",
     "scripts": {
-        "prettier": "prettier --write src",
+        "prettier": "prettier --write src tests",
         "build": "tsc",
         "buildexamples": "cd examples/TypeScript && tsc && prettier --write ..",
-        "test": "node ./test.js"
+        "test": "node tests"
     },
     "name": "twitch-emotes",
     "version": "1.0.2",

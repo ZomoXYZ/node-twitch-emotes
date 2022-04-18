@@ -1,0 +1,13 @@
+import { ApiResponseHeaders } from './api';
+import { EmoteData } from './types';
+export declare type ServicesEach = 'twitch' | '7tv' | 'bttv' | 'ffz';
+export declare type Services = 'all' | ServicesEach[];
+export declare function correctServices(services: Services): string;
+export declare const isChannel: (channel: string) => boolean;
+export declare const isChannelThrow: (channel: string) => string;
+export declare function uniqueArr<T>(arr: T | T[]): T[];
+export declare const highestQuality: ({ urls }: EmoteData) => string;
+export declare const asyncEach: <T>(arr: T[], callback: (item: T) => Promise<void>) => Promise<void[]>;
+export declare function repeatBase(every: number, starting: number, once: boolean, callback: () => void | Promise<void>): Promise<void>;
+export declare const repeat: (starting: number, callback: () => void) => Promise<void>;
+export declare const logRate: (type: string, { limit, remaining, reset }: ApiResponseHeaders) => void;

@@ -10,5 +10,5 @@
         "removeComments": true,
         "strict": true
     },
-    "exclude": ["node_modules"]
+    "exclude": ["lib/**/*", "examples/**/*"]
 }

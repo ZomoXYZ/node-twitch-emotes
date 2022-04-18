@@ -23,7 +23,3 @@ export interface EmoteData {
     code: string
     urls: EmoteURL[]
 }
-
-export interface SettingsOptions {
-    autoRefresh?: boolean
-}

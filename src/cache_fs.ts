@@ -1,6 +1,10 @@
 import { access, mkdir, readJson, writeJson } from 'fs-extra'
+import { getSetting } from './settings'
+import { join } from 'path'
 import { ChannelIdentifier, EmoteData } from './types'
 import { isChannelThrow, uniqueArr } from './util'
+
+const Dir = (fname?: string) => join(getSetting('cacheDir'), fname || '')
 
 export interface FsResponse<T> {
     data: T
@@ -9,9 +13,9 @@ export interface FsResponse<T> {
 
 export async function ensureCacheFolder() {
     try {
-        await access(`./cache`)
+        await access(Dir())
     } catch (e) {
-        await mkdir(`./cache`)
+        await mkdir(Dir())
     }
 }
 
@@ -19,12 +23,12 @@ export async function loadCacheRaw<T = {}>(fileName: string): Promise<T | null> 
     await ensureCacheFolder()
 
     try {
-        await access(`./cache/${fileName}.json`)
+        await access(Dir(fileName))
     } catch (e) {
         return null
     }
 
-    return await readJson(`./cache/${fileName}.json`)
+    return await readJson(Dir(fileName))
 }
 
 export async function loadCache<T = []>(fileName: string, def: T): Promise<FsResponse<T>> {
@@ -39,7 +43,7 @@ export async function loadCache<T = []>(fileName: string, def: T): Promise<FsRes
 
 async function writeCache(fileName: string, data: any) {
     await ensureCacheFolder()
-    await writeJson(`./cache/${fileName}.json`, { data, timestamp: Date.now() })
+    await writeJson(Dir(fileName), { data, timestamp: Date.now() })
 }
 
 export async function loadChannelList() {

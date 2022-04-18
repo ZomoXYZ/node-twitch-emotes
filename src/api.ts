@@ -6,10 +6,13 @@ import { correctServices, isChannelThrow, Services } from './util'
 // declare function fetch(url: string): Promise<Response>
 
 export type ApiResponseTypes = ChannelIdentifier | EmoteData[]
-export interface ApiResponse<T> {
+
+export interface ApiResponseHeaders {
     limit: string | null
     remaining: string | null
     reset: string | null
+}
+export interface ApiResponse<T> extends ApiResponseHeaders {
     data: T | null
 }
 

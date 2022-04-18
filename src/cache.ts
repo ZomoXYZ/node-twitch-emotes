@@ -1,80 +1,73 @@
 import { channelEmotes, channelIdentifier, globalEmotes } from './api'
-import { ChannelIdentifier, EmoteData, SettingsOptions } from './types'
-import { loadChannels, loadGlobalCache, saveChannelCache, saveGlobalCache } from './cache_fs'
-import { repeat } from './util'
-
-const RefreshTimeout = 1000 * 60 * 60 * 24 // 1 day
+import { ChannelIdentifier, EmoteData } from './types'
+import {
+    AllChannelDataCollection,
+    loadChannels,
+    loadGlobalCache,
+    saveChannelCache,
+    saveGlobalCache,
+} from './cache_fs'
+import { asyncEach, logRate, repeat } from './util'
+import { getSetting, setSettings, SettingsOptions } from './settings'
 
 var GlobalEmotesCache: EmoteData[] = [],
     ChannelEmotesCache: { [channel: string]: EmoteData[] } = {},
     ChannelIdentifiersCache: { [channel: string]: ChannelIdentifier } = {},
-	Initiated = false
-
-const Settings = {
-	autoRefresh: true
-}
-
-function setSettings(adjustSettings: SettingsOptions) {
-	if (adjustSettings.autoRefresh !== undefined) {
-		Settings.autoRefresh = adjustSettings.autoRefresh
-	}
-}
+    Initiated = false
 
 /**
  *
- * @param channels ensure specific channels are loaded
+ * @param channels ensure specific channels are loaded (all cached data will be loaded unless disabled in settings)
  * @returns
  */
 export async function initCache(channels: string[] = [], settings: SettingsOptions = {}) {
     if (Initiated) return
     Initiated = true
 
-	channels = channels.map(ch => ch.toLowerCase());
+    channels = channels.map(ch => ch.toLowerCase())
 
-	setSettings(settings);
+    setSettings(settings)
 
-    const globalData = await loadGlobalCache()
+    let globalTimestamp = 0
 
-    if (globalData.data.length) {
-        GlobalEmotesCache = globalData.data
-    }
-
-    //reload global once a day
-    if (Settings.autoRefresh)
-        repeat(RefreshTimeout, globalData.timestamp, () => reloadGlobalEmotes())
-
-    const channelsData = await loadChannels()
-
-    let foundChannels: string[] = []
-    if (channelsData) foundChannels = Object.keys(channelsData)
-
-    const allChannels = [...foundChannels, ...channels]
-
-    for (const chan of allChannels) {
-        let timestamp = 0
-
-        if (channelsData && chan in channelsData) {
-            const { emotes, identifier } = channelsData[chan]
-
-            timestamp = Math.min(emotes.timestamp, identifier.timestamp)
-
-            if (emotes.data.length) {
-                ChannelEmotesCache[chan] = emotes.data
-            }
-
-            if (identifier.data) {
-                ChannelIdentifiersCache[chan] = identifier.data
-            }
+    if (getSetting('cache')) {
+        const globalData = await loadGlobalCache()
+        globalTimestamp = globalData.timestamp
+        if (globalData.data.length) {
+            GlobalEmotesCache = globalData.data
         }
 
-        //reload channel data once a day
-        if (Settings.autoRefresh) repeat(RefreshTimeout, timestamp, () => reloadChannel(chan))
+        const channelsData = await loadChannels()
+        if (channelsData) await runChannelData(channelsData)
+    }
+
+    await repeat(globalTimestamp, () => reloadGlobalEmotes())
+    await asyncEach(channels, chan => repeat(0, () => reloadChannel(chan)))
+}
+
+async function runChannelData(channels: AllChannelDataCollection) {
+    for (const chan in channels) {
+        let timestamp = 0
+
+        const { emotes, identifier } = channels[chan]
+
+        timestamp = Math.min(emotes.timestamp, identifier.timestamp)
+
+        if (emotes.data.length) {
+            ChannelEmotesCache[chan] = emotes.data
+        }
+
+        if (identifier.data) {
+            ChannelIdentifiersCache[chan] = identifier.data
+        }
+
+        await repeat(timestamp, () => reloadChannel(chan))
     }
 }
 
 export async function reloadGlobalEmotes() {
     const { data: emotes, ...rate } = await globalEmotes()
-    console.log('RATE', 'global emotes', rate)
+    logRate('global emotes', rate)
 
     if (!emotes) {
         throw `Error fetching global emotes`
@@ -82,15 +75,16 @@ export async function reloadGlobalEmotes() {
 
     GlobalEmotesCache = emotes
 
-    await saveGlobalCache(GlobalEmotesCache)
+    if (getSetting('cache')) await saveGlobalCache(GlobalEmotesCache)
 }
 
 export async function reloadChannel(channel: string) {
-	channel = channel.toLowerCase();
-	
+    channel = channel.toLowerCase()
+
     const { data: emotes, ...rateEmotes } = await channelEmotes(channel)
     const { data: identifier, ...rateIdentifier } = await channelIdentifier(channel)
-    console.log('RATE', 'emotes', rateEmotes, 'identifier', rateIdentifier)
+    logRate(`channel emotes     ${channel}`, rateEmotes)
+    logRate(`channel identifier ${channel}`, rateIdentifier)
 
     if (!emotes || !identifier) {
         throw `Error fetching channel data for ${channel}`
@@ -99,11 +93,16 @@ export async function reloadChannel(channel: string) {
     ChannelEmotesCache[channel] = emotes
     ChannelIdentifiersCache[channel] = identifier
 
-    await saveChannelCache(channel, ChannelEmotesCache[channel], ChannelIdentifiersCache[channel])
+    if (getSetting('cache'))
+        await saveChannelCache(
+            channel,
+            ChannelEmotesCache[channel],
+            ChannelIdentifiersCache[channel]
+        )
 }
 
 export function getChannel(channel: string) {
-	channel = channel.toLowerCase()
+    channel = channel.toLowerCase()
     return {
         identifier: ChannelIdentifiersCache[channel],
         emotes: ChannelEmotesCache[channel],
@@ -120,7 +119,7 @@ export function getChannel(channel: string) {
  */
 export function getEmote(emote: string, channel?: string): EmoteData | false | null {
     if (channel) {
-		channel = channel.toLowerCase();
+        channel = channel.toLowerCase()
         const emotes = ChannelEmotesCache[channel]
         if (emotes) {
             const emoteData = emotes.find(e => e.code === emote)

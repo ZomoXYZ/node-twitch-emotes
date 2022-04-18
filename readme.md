@@ -10,7 +10,7 @@ simple
 
 ```ts
 import { initCache, spliceMessage } from 'twitch-emotes'
-    
+
 await initCache(['xqcow'])
 
 let message = spliceMessage('EZ Clap too good', 'xqcow')
@@ -23,7 +23,7 @@ advanced
 
 ```ts
 import { initCache, spliceMessage } from 'twitch-emotes'
-    
+
 await initCache(['xqcow'])
 
 let message = spliceMessage('EZ Clap too good', 'xqcow', emote => {

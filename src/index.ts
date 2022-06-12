@@ -1,6 +1,6 @@
 import { getEmote } from './cache'
 import { EmoteData } from './types'
-import { highestQuality } from './util'
+import { highestQuality, isChannelThrow } from './util'
 
 export { ApiResponseTypes, ApiResponseHeaders, ApiResponse } from './api'
 export * from './cache'
@@ -17,6 +17,8 @@ export function spliceMessage<T>(
     channel: string,
     callback: (emote: EmoteData) => string | T = highestQuality
 ): (string | T)[] {
+    isChannelThrow(channel)
+
     const messageSpl: string[] = message.split(' '),
         arr: (string | T)[] = []
 

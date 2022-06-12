@@ -1,4 +1,4 @@
-import fetch, { Response } from 'node-fetch'
+import fetch from 'node-fetch'
 import { getSetting } from './settings'
 import { ChannelIdentifier, EmoteData } from './types'
 import { correctServices, isChannelThrow, Services, sleep } from './util'

@@ -1,6 +1,6 @@
 import { highestQuality, spliceMessage } from '../../lib'
 
-const message = spliceMessage('EZ Clap too good', 'xqcow', emote => ({
+const message = spliceMessage('EZ Clap too good', 'xqc', emote => ({
     name: emote.code,
     url: highestQuality(emote),
 }))

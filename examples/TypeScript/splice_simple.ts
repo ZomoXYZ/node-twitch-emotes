@@ -7,7 +7,7 @@ interface EmoteImage {
 
 const message = spliceMessage(
     'EZ Clap too good',
-    'xqcow',
+    'xqc',
     (emote): EmoteImage => ({
         name: emote.code,
         url: highestQuality(emote),

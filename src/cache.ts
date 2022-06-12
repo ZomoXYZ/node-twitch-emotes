@@ -11,9 +11,9 @@ import { asyncEach, isChannelThrow, logRate, repeat } from './util'
 import { getSetting, setSettings, SettingsOptions } from './settings'
 
 var GlobalEmotesCache: EmoteData[] = [],
+    Initiated = false,
     ChannelEmotesCache: { [channel: string]: EmoteData[] } = {},
-    ChannelIdentifiersCache: { [channel: string]: ChannelIdentifier } = {},
-    Initiated = false
+    ChannelIdentifiersCache: { [channel: string]: ChannelIdentifier } = {}
 
 /**
  *
@@ -21,27 +21,28 @@ var GlobalEmotesCache: EmoteData[] = [],
  * @returns
  */
 export async function initCache(channels: string[] = [], settings: SettingsOptions = {}) {
-    if (Initiated) return
-    Initiated = true
+    channels = channels.map(ch => ch.toLowerCase()).filter(ch => !(ch in ChannelEmotesCache))
 
-    channels = channels.map(ch => ch.toLowerCase())
+    if (!Initiated) {
+        Initiated = true
 
-    setSettings(settings)
+        let globalTimestamp = 0
 
-    let globalTimestamp = 0
+        setSettings(settings)
 
-    if (getSetting('cache')) {
-        const globalData = await loadGlobalCache()
-        globalTimestamp = globalData.timestamp
-        if (globalData.data.length) {
-            GlobalEmotesCache = globalData.data
+        if (getSetting('cache')) {
+            const globalData = await loadGlobalCache()
+            globalTimestamp = globalData.timestamp
+            if (globalData.data.length) {
+                GlobalEmotesCache = globalData.data
+            }
+
+            const channelsData = await loadChannels()
+            if (channelsData) await runChannelData(channelsData)
         }
-
-        const channelsData = await loadChannels()
-        if (channelsData) await runChannelData(channelsData)
+        await repeat(globalTimestamp, () => reloadGlobalEmotes())
     }
 
-    await repeat(globalTimestamp, () => reloadGlobalEmotes())
     await asyncEach(channels, chan => repeat(0, () => reloadChannel(chan)))
 }
 

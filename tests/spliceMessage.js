@@ -1,6 +1,7 @@
 import { initCache, spliceMessage, reloadChannel } from '../lib/index.js'
 import { runTest } from './util/run.js'
 import { compareArray, expectThrow } from './util/expect.js'
+import { message } from './util/util.js'
 
 export default async function () {
     //set autoRefresh to false so the script ends naturally
@@ -31,16 +32,16 @@ function testAsString() {
     compareArray(message, expected)
 }
 
-function testCacheError() {
+async function testCacheError() {
     const func = () => spliceMessage('EZ Clap too good', 'xqcow')
     const expected = 'Channel xqcow not cached'
-    expectThrow(func, expected)
+    await expectThrow(func, expected)
 }
 
-function testUsernameInvalid() {
+async function testUsernameInvalid() {
     const func = () => spliceMessage('EZ Clap too good', 'x')
     const expected = 'Invalid channel name: x'
-    expectThrow(func, expected)
+    await expectThrow(func, expected)
 }
 
 async function testUsernameError() {

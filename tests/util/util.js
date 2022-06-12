@@ -1,3 +1,4 @@
+import { relative } from 'path'
 import { __dirname } from '../index.js'
 
 export const indentData = (prefix, json) =>
@@ -20,11 +21,41 @@ export const indentLen = (len, str) =>
 
 export class ExpectError extends Error {}
 
-const fixStack = stack =>
-    stack
+const fixStack = err => {
+    let reachedTests = false
+    return err.stack
         .split('\n')
-        .filter(line => true)
-        .join('\n')
+        .filter(line => {
+            if (reachedTests) {
+                return false
+            }
 
-export const message = err =>
-    indentLen(4, err.constructor === ExpectError ? err.message : err.stack)
+            let foundPath = /file:\/\/\/(.*?):\d+:\d+/.exec(line)
+            if (!foundPath) {
+                return true
+            }
+
+            let relPath = relative(__dirname, foundPath[1])
+            if (relPath.startsWith('..')) {
+                return true
+            }
+
+            reachedTests = true
+            return false
+        })
+        .join('\n')
+}
+
+export const message = (err, noLocalStack) => {
+    let message = ''
+    if (typeof err === 'string') {
+        message = err
+    } else if (err.constructor === ExpectError) {
+        message = err.message
+    } else if (noLocalStack) {
+        message = fixStack(err)
+    } else {
+        message = err.stack
+    }
+    return indentLen(4, message)
+}

@@ -7,7 +7,6 @@ import { fileURLToPath } from 'url'
 install({ environment: 'node' })
 
 export const __dirname = dirname(fileURLToPath(import.meta.url))
-console.log(__dirname)
 
 Promise.all([runTestBatch(spliceMessage, 'spliceMessage')]).then(() =>
     console.log('All tests passed')

@@ -35,7 +35,7 @@ export async function expectThrow(given, expected) {
     } catch (e) {
         if (e.message !== expected) {
             throw new ExpectError(`${indent('Expected:    ', expected)}
-${`Given ${message(e)}`}`)
+${`Given ${message(e, true)}`}`)
         }
         return
     }

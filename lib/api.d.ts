@@ -8,6 +8,7 @@ export interface ApiResponseHeaders {
 }
 export interface ApiResponse<T> extends ApiResponseHeaders {
     data: T | null;
+    error: string | null;
 }
 export declare const globalEmotes: (services?: Services) => Promise<ApiResponse<EmoteData[]>>;
 export declare const channelEmotes: (channel: string, services?: Services) => Promise<ApiResponse<EmoteData[]>>;

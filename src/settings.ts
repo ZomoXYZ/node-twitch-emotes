@@ -1,11 +1,9 @@
 export interface SettingsOptions {
     /** default: true */
     autoRefresh?: boolean
-    /** default: 1 day */
+    /** default: 5 minutes */
     refreshInterval?: number
-    /**  */
-    /**
-     * caching on the disk
+    /** caching on the disk
      *
      * default: true
      */
@@ -14,32 +12,31 @@ export interface SettingsOptions {
     cacheDir?: string
     /** default: true */
     logApiRate?: boolean
+    /** default: 1 */
+    maxRetryRateLimit?: number
 }
-export interface SettingsConst {
+export interface Settings extends SettingsOptions {
     autoRefresh: boolean
     refreshInterval: number
     cache: boolean
     cacheDir: string
     logApiRate: boolean
+    maxRetryRateLimit: number
 }
 
-const Settings: SettingsConst = {
+var Settings: Settings = {
     autoRefresh: true,
-    refreshInterval: 1000 * 60 * 60 * 24, // 1 day
+    refreshInterval: 1000 * 60 * 5, // 5 minutes
     cache: true,
     cacheDir: './cache',
     logApiRate: true,
+    maxRetryRateLimit: 1,
 }
 
 export function setSettings(adjustSettings: SettingsOptions) {
-    if (adjustSettings.autoRefresh !== undefined) Settings.autoRefresh = adjustSettings.autoRefresh
-    if (adjustSettings.refreshInterval !== undefined)
-        Settings.refreshInterval = adjustSettings.refreshInterval
-    if (adjustSettings.cache !== undefined) Settings.cache = adjustSettings.cache
-    if (adjustSettings.cacheDir !== undefined) Settings.cacheDir = adjustSettings.cacheDir
-    if (adjustSettings.logApiRate !== undefined) Settings.logApiRate = adjustSettings.logApiRate
+    Settings = Object.assign(Settings, adjustSettings) as Settings
 }
 
-export function getSetting<T extends keyof SettingsConst>(setting: T): SettingsConst[T] {
+export function getSetting<T extends keyof Settings>(setting: T): Settings[T] {
     return Settings[setting]
 }

@@ -1,9 +1,7 @@
 import fetch, { Response } from 'node-fetch'
+import { getSetting } from './settings'
 import { ChannelIdentifier, EmoteData } from './types'
-import { correctServices, isChannelThrow, Services } from './util'
-
-//TODO use node-fetch
-// declare function fetch(url: string): Promise<Response>
+import { correctServices, isChannelThrow, Services, sleep } from './util'
 
 export type ApiResponseTypes = ChannelIdentifier | EmoteData[]
 
@@ -14,28 +12,67 @@ export interface ApiResponseHeaders {
 }
 export interface ApiResponse<T> extends ApiResponseHeaders {
     data: T | null
+    error: string | null
 }
 
-async function handleResponse<T>(resp: Response): Promise<ApiResponse<T>> {
-    let data = await resp.json()
+/**
+ * @returns ApiResponse or false
+ *
+ * false means the request was rate limited, and the time remaining has
+ */
+async function handleResponse<T>(
+    url: string,
+    retryCount: number = 0,
+    prevHeaders?: ApiResponseHeaders
+): Promise<ApiResponse<T>> {
+    if (retryCount && prevHeaders && retryCount > getSetting('maxRetryRateLimit')) {
+        return {
+            ...prevHeaders,
+            data: null,
+            error: 'Rate limit exceeded',
+        }
+    }
+
+    let res = await fetch(url)
+    let code = res.status
+    let data = await res.json()
+    let error = null
+
+    if (code === 429) {
+        //rate limited
+        let retry = res.headers.get('Retry-After') || '20' //20 seconds is the max rate limit time
+        let time = parseInt(retry) * 1000
+        await sleep(time)
+        return handleResponse(url, ++retryCount, {
+            limit: res.headers.get('X-Ratelimit-Limit'),
+            remaining: res.headers.get('X-Ratelimit-Remaining'),
+            reset: res.headers.get('X-Ratelimit-Reset'),
+        })
+    } else if (code === 400 || 'error' in data) {
+        error = data.error
+    }
 
     return {
-        limit: resp.headers.get('X-Ratelimit-Limit'),
-        remaining: resp.headers.get('X-Ratelimit-Remaining'),
-        reset: resp.headers.get('X-Ratelimit-Reset'),
-        data: data.error ? null : data,
+        limit: res.headers.get('X-Ratelimit-Limit'),
+        remaining: res.headers.get('X-Ratelimit-Remaining'),
+        reset: res.headers.get('X-Ratelimit-Reset'),
+        data: error ? null : data,
+        error,
     }
 }
 
 /**
  * @returns \{ data }: url to the emote image, or null if not found
  */
-function handleProxyResponse(resp: Response): ApiResponse<string> {
+async function handleProxyResponse(url: string): Promise<ApiResponse<string>> {
+    let res = await fetch(url)
+
     return {
-        limit: resp.headers.get('X-Ratelimit-Limit'),
-        remaining: resp.headers.get('X-Ratelimit-Remaining'),
-        reset: resp.headers.get('X-Ratelimit-Reset'),
-        data: resp.status === 307 ? resp.url : null,
+        limit: res.headers.get('X-Ratelimit-Limit'),
+        remaining: res.headers.get('X-Ratelimit-Remaining'),
+        reset: res.headers.get('X-Ratelimit-Reset'),
+        data: res.status === 307 ? res.url : null,
+        error: null,
     }
 }
 
@@ -46,8 +83,8 @@ function handleProxyResponse(resp: Response): ApiResponse<string> {
  * Math pattern `/^[^\.]+(all|(\.?twitch|\.?7tv|\.?bttv|\.?ffz)+)$/`
  */
 export const globalEmotes = (services: Services = 'all'): Promise<ApiResponse<EmoteData[]>> =>
-    fetch(`https://emotes.adamcy.pl/v1/global/emotes/${correctServices(services)}`).then(res =>
-        handleResponse<EmoteData[]>(res)
+    handleResponse<EmoteData[]>(
+        `https://emotes.adamcy.pl/v1/global/emotes/${correctServices(services)}`
     )
 
 /**
@@ -61,19 +98,19 @@ export const channelEmotes = (
     channel: string,
     services: Services = 'all'
 ): Promise<ApiResponse<EmoteData[]>> =>
-    fetch(
+    handleResponse<EmoteData[]>(
         `https://emotes.adamcy.pl/v1/channel/${isChannelThrow(channel)}/emotes/${correctServices(
             services
         )}`
-    ).then(res => handleResponse<EmoteData[]>(res))
+    )
 
 /**
  * Returns basic identifiers (id, login, display name)
  * @param channel It's recommended to provide twitch id, but twitch login is also supported
  */
 export const channelIdentifier = (channel: string): Promise<ApiResponse<ChannelIdentifier>> =>
-    fetch(`https://emotes.adamcy.pl/v1/channel/${isChannelThrow(channel)}/id`).then(res =>
-        handleResponse<ChannelIdentifier>(res)
+    handleResponse<ChannelIdentifier>(
+        `https://emotes.adamcy.pl/v1/channel/${isChannelThrow(channel)}/id`
     )
 
 /**
@@ -89,8 +126,8 @@ export const proxyChannelEmote = (
     channel: string,
     services: Services = 'all'
 ): Promise<ApiResponse<string | null>> =>
-    fetch(
+    handleProxyResponse(
         `https://emotes.adamcy.pl/v1/channel/${isChannelThrow(channel)}/emotes/${correctServices(
             services
         )}/proxy`
-    ).then(res => handleProxyResponse(res))
+    )

@@ -66,11 +66,11 @@ async function runChannelData(channels: AllChannelDataCollection) {
 }
 
 export async function reloadGlobalEmotes() {
-    const { data: emotes, ...rate } = await globalEmotes()
+    const { data: emotes, error, ...rate } = await globalEmotes()
     logRate('global emotes', rate)
 
-    if (!emotes) {
-        throw `Error fetching global emotes`
+    if (!emotes || error) {
+        throw new Error(`Error fetching global emotes: ${error || '[unknown error]'}`)
     }
 
     GlobalEmotesCache = emotes
@@ -81,13 +81,21 @@ export async function reloadGlobalEmotes() {
 export async function reloadChannel(channel: string) {
     channel = channel.toLowerCase()
 
-    const { data: emotes, ...rateEmotes } = await channelEmotes(channel)
-    const { data: identifier, ...rateIdentifier } = await channelIdentifier(channel)
+    const { data: emotes, error: emotesErr, ...rateEmotes } = await channelEmotes(channel)
     logRate(`channel emotes     ${channel}`, rateEmotes)
+
+    const { data: identifier, error: idenErr, ...rateIdentifier } = await channelIdentifier(channel)
     logRate(`channel identifier ${channel}`, rateIdentifier)
 
     if (!emotes || !identifier) {
-        throw `Error fetching channel data for ${channel}`
+        let emoteErrStr = emotesErr ? `Emote Error: ${emotesErr}` : ''
+        let idenErrStr = idenErr ? `Identifier Error: ${idenErr}` : ''
+        let error = `${emoteErrStr}\n${idenErrStr}`.trim()
+
+        if (error.length) error = `\n${error}`
+        else error = ': [unknown error]'
+
+        throw new Error(`Error fetching channel data for ${channel}${error}`)
     }
 
     ChannelEmotesCache[channel] = emotes
@@ -110,7 +118,6 @@ export function getChannel(channel: string) {
 }
 
 /**
- *
  * @returns EmoteData: valid
  *
  * null: not an emote

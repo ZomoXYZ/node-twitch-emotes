@@ -6,6 +6,8 @@ specifiers:
   fs-extra: ^10.0.1
   node-fetch: 2.6.7
   prettier: ^2.6.2
+  source-map-support: ^0.5.21
+  stack-trace: 1.0.0-pre1
   typescript: ^4.6.3
 
 dependencies:
@@ -16,6 +18,8 @@ devDependencies:
   '@types/fs-extra': 9.0.13
   '@types/node-fetch': 2.6.1
   prettier: 2.6.2
+  source-map-support: 0.5.21
+  stack-trace: 1.0.0-pre1
   typescript: 4.6.3
 
 packages:
@@ -39,6 +43,10 @@ packages:
 
   /asynckit/0.4.0:
     resolution: {integrity: sha1-x57Zf380y48robyXkLzDZkdLS3k=}
+    dev: true
+
+  /buffer-from/1.1.2:
+    resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==}
     dev: true
 
   /combined-stream/1.0.8:
@@ -111,6 +119,23 @@ packages:
     resolution: {integrity: sha512-PkUpF+qoXTqhOeWL9fu7As8LXsIUZ1WYaJiY/a7McAQzxjk82OF0tibkFXVCDImZtWxbvojFjerkiLb0/q8mew==}
     engines: {node: '>=10.13.0'}
     hasBin: true
+    dev: true
+
+  /source-map-support/0.5.21:
+    resolution: {integrity: sha512-uBHU3L3czsIyYXKX88fdrGovxdSCoTGDRZ6SYXtSRxLZUzHg5P/66Ht6uoUlHu9EZod+inXhKo3qQgwXUT/y1w==}
+    dependencies:
+      buffer-from: 1.1.2
+      source-map: 0.6.1
+    dev: true
+
+  /source-map/0.6.1:
+    resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
+    engines: {node: '>=0.10.0'}
+    dev: true
+
+  /stack-trace/1.0.0-pre1:
+    resolution: {integrity: sha512-biM7OwS3J2hcou7tfozHcsqhJZxX5pqMMqe/Zr6stw9uVn8Gh7ct3eFR9Gb66BBi/ToSeOgk4FsjKgZVrDIyew==}
+    engines: {node: '16'}
     dev: true
 
   /tr46/0.0.3:

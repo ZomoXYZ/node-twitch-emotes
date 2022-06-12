@@ -1,3 +1,6 @@
+import { install } from 'source-map-support'
+install({ environment: 'node' })
+
 export const indent = (prefix, json) =>
     JSON.stringify(json, null, 2)
         .split('\n')

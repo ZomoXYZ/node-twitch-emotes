@@ -3,7 +3,6 @@ import { EmoteData } from './types';
 export declare type ServicesEach = 'twitch' | '7tv' | 'bttv' | 'ffz';
 export declare type Services = 'all' | ServicesEach[];
 export declare function correctServices(services: Services): string;
-export declare const isChannel: (channel: string) => boolean;
 export declare const isChannelThrow: (channel: string) => string;
 export declare function uniqueArr<T>(arr: T | T[]): T[];
 export declare const highestQuality: ({ urls }: EmoteData) => string;

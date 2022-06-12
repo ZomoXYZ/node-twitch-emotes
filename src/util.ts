@@ -13,7 +13,7 @@ export function correctServices(services: Services): string {
     return services.join('.')
 }
 
-export const isChannel = (channel: string) => /^[a-zA-Z0-9_]{3,25}$/.test(channel)
+const isChannel = (channel: string) => /^[a-zA-Z0-9_]{3,25}$/.test(channel)
 
 export const isChannelThrow = (channel: string) => {
     if (isChannel(channel)) return channel

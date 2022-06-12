@@ -7,7 +7,7 @@ import {
     saveChannelCache,
     saveGlobalCache,
 } from './cache_fs'
-import { asyncEach, logRate, repeat } from './util'
+import { asyncEach, isChannelThrow, logRate, repeat } from './util'
 import { getSetting, setSettings, SettingsOptions } from './settings'
 
 var GlobalEmotesCache: EmoteData[] = [],
@@ -126,6 +126,7 @@ export function getChannel(channel: string) {
  */
 export function getEmote(emote: string, channel?: string): EmoteData | null {
     if (channel) {
+        isChannelThrow(channel)
         channel = channel.toLowerCase()
         const emotes = ChannelEmotesCache[channel]
         if (emotes) {

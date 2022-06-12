@@ -13,11 +13,11 @@ export function correctServices(services: Services): string {
     return services.join('.')
 }
 
-export const isChannel = (channel: string) => /^[a-zA-Z0-9_]{4,25}$/.test(channel)
+export const isChannel = (channel: string) => /^[a-zA-Z0-9_]{3,25}$/.test(channel)
 
 export const isChannelThrow = (channel: string) => {
     if (isChannel(channel)) return channel
-    throw `Invalid channel name: ${channel}`
+    throw new Error(`Invalid channel name: ${channel}`)
 }
 
 export function uniqueArr<T>(arr: T | T[]): T[] {
@@ -67,3 +67,5 @@ RATE: ${type.toUpperCase()}
     reset:     ${reset || 'N/A'}
 `)
 }
+
+export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))

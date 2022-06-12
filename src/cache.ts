@@ -124,7 +124,7 @@ export function getChannel(channel: string) {
  *
  * false: channel not cached
  */
-export function getEmote(emote: string, channel?: string): EmoteData | false | null {
+export function getEmote(emote: string, channel?: string): EmoteData | null {
     if (channel) {
         channel = channel.toLowerCase()
         const emotes = ChannelEmotesCache[channel]
@@ -132,7 +132,7 @@ export function getEmote(emote: string, channel?: string): EmoteData | false | n
             const emoteData = emotes.find(e => e.code === emote)
             if (emoteData) return emoteData
         } else {
-            return false
+            throw new Error(`Channel ${channel} not cached`)
         }
     }
 

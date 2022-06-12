@@ -32,27 +32,29 @@ function testAsString() {
 }
 
 function testCacheError() {
-    expectThrow(() => spliceMessage('EZ Clap too good', 'xqcow'), 'Channel xqcow not cached')
+    const func = () => spliceMessage('EZ Clap too good', 'xqcow')
+    const expected = 'Channel xqcow not cached'
+    expectThrow(func, expected)
 }
 
 function testUsernameInvalid() {
-    expectThrow(() => spliceMessage('EZ Clap too good', 'x'), 'Invalid channel name: x')
+    const func = () => spliceMessage('EZ Clap too good', 'x')
+    const expected = 'Invalid channel name: x'
+    expectThrow(func, expected)
 }
 
 async function testUsernameError() {
-    await expectThrow(
-        () => reloadChannel('ajsybvjpulmatzyywhuzrlbyx'),
-        `Error fetching channel data for ajsybvjpulmatzyywhuzrlbyx
+    const func = () => reloadChannel('ajsybvjpulmatzyywhuzrlbyx')
+    const expected = `Error fetching channel data for ajsybvjpulmatzyywhuzrlbyx
 Emote Error: User not found
 Identifier Error: User not found`
-    )
+    await expectThrow(func, expected)
 }
 
 async function testUsernameError2() {
-    await expectThrow(
-        () => initCache(['ajsybvjpulmatzyywhuzrlbyx']),
-        `Error fetching channel data for ajsybvjpulmatzyywhuzrlbyx
+    const func = () => initCache(['ajsybvjpulmatzyywhuzrlbyx'])
+    const expected = `Error fetching channel data for ajsybvjpulmatzyywhuzrlbyx
 Emote Error: User not found
 Identifier Error: User not found`
-    )
+    await expectThrow(func, expected)
 }

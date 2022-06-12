@@ -2,7 +2,7 @@
     "main": "lib/index.js",
     "scripts": {
         "prettier": "prettier --write src tests",
-        "build": "tsc",
+        "build": "npm run prettier && tsc",
         "buildexamples": "cd examples/TypeScript && tsc && prettier --write ..",
         "test": "node tests"
     },

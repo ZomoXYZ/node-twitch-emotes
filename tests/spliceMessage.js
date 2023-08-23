@@ -18,8 +18,8 @@ export default async function () {
 function testAsURL() {
     const message = spliceMessage('EZ Clap too good', 'xqc')
     const expected = [
-        'https://cdn.betterttv.net/emote/5590b223b344e2c42a9e28e3/3x',
-        'https://cdn.betterttv.net/emote/55b6f480e66682f576dd94f5/3x',
+        'https://cdn.7tv.app/emote/63071b80942ffb69e13d700f/4x.webp',
+        'https://cdn.7tv.app/emote/62fc0a0c4a75fd54bd3520a9/4x.webp',
         'too',
         'good',
     ]

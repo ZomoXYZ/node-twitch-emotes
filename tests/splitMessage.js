@@ -1,4 +1,4 @@
-import { initCache, spliceMessage, reloadChannel } from '../lib/index.js'
+import { initCache, splitMessage, reloadChannel } from '../lib/index.js'
 import { runTest } from './util/run.js'
 import { compareArray, expectThrow } from './util/expect.js'
 
@@ -6,56 +6,56 @@ export default async function () {
     //set autoRefresh to false so the script ends naturally
     await initCache(['xqc'], { autoRefresh: false, cache: false, logApiRate: false })
 
-    await runTest(test2AsURL, 'As Url')
+    await runTest(testAsURL, 'As Url')
 
-    await runTest(test2AsURLStrict, 'As Url Strict')
-    await runTest(test2AsURLNotStrict, 'As Url Not Strict')
-    await runTest(test2AsURLStrictDefault, 'As Url Default Strictness')
+    await runTest(testAsURLStrict, 'As Url Strict')
+    await runTest(testAsURLNotStrict, 'As Url Not Strict')
+    await runTest(testAsURLStrictDefault, 'As Url Default Strictness')
 
-    await runTest(test2AsURLWithEmotes, 'As Url With Emotes')
-    await runTest(test2AsURLWithEmotesCombined, 'As Url With Emotes Combined')
+    await runTest(testAsURLWithEmotes, 'As Url With Emotes')
+    await runTest(testAsURLWithEmotesCombined, 'As Url With Emotes Combined')
 
-    await runTest(test2AsString, 'As String')
-    await runTest(test2AsStringWithEmotes, 'As String With Emotes')
-    await runTest(test2AsStringWithEmotesCombined, 'As String With Emotes Combined')
+    await runTest(testAsString, 'As String')
+    await runTest(testAsStringWithEmotes, 'As String With Emotes')
+    await runTest(testAsStringWithEmotesCombined, 'As String With Emotes Combined')
 
-    await runTest(test2CacheError, 'Cache Error')
-    await runTest(test2UsernameInvalid, 'Username Invalid')
-    await runTest(test2UsernameError, 'Username Error')
-    await runTest(test2UsernameError2, 'Username Error 2')
+    await runTest(testCacheError, 'Cache Error')
+    await runTest(testUsernameInvalid, 'Username Invalid')
+    await runTest(testUsernameError, 'Username Error')
+    await runTest(testUsernameError2, 'Username Error 2')
 }
 
-function test2AsURL() {
-    const message = spliceMessage('EZ Clap too good', 'xqc')
+function testAsURL() {
+    const message = splitMessage('EZ Clap too good', 'xqc')
     const expected = [
         'https://cdn.7tv.app/emote/63071b80942ffb69e13d700f/4x.webp',
-        ' ',
         'https://cdn.7tv.app/emote/62fc0a0c4a75fd54bd3520a9/4x.webp',
-        ' too good',
+        'too',
+        'good',
     ]
     compareArray(message, expected)
 }
 
-function test2AsURLStrict() {
-    const message = spliceMessage('xqcL', 'xqc', undefined, undefined, true)
+function testAsURLStrict() {
+    const message = splitMessage('xqcL', 'xqc', undefined, undefined, true)
     const expected = ['xqcL']
     compareArray(message, expected)
 }
 
-function test2AsURLNotStrict() {
-    const message = spliceMessage('xqcL', 'xqc', undefined, undefined, false)
+function testAsURLNotStrict() {
+    const message = splitMessage('xqcL', 'xqc', undefined, undefined, false)
     const expected = ['https://static-cdn.jtvnw.net/emoticons/v2/1035663/default/light/3.0']
     compareArray(message, expected)
 }
 
-function test2AsURLStrictDefault() {
-    const message = spliceMessage('xqcL', 'xqc')
+function testAsURLStrictDefault() {
+    const message = splitMessage('xqcL', 'xqc')
     const expected = ['https://static-cdn.jtvnw.net/emoticons/v2/1035663/default/light/3.0']
     compareArray(message, expected)
 }
 
-function test2AsURLWithEmotes() {
-    const message = spliceMessage(
+function testAsURLWithEmotes() {
+    const message = splitMessage(
         'hasHi hasSlam hasPOGGERS hasPOGGIES',
         'xqc',
         undefined,
@@ -64,18 +64,15 @@ function test2AsURLWithEmotes() {
     )
     const expected = [
         'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_8b228c4bd87b4305a4c05179353e751a/default/dark/3.0',
-        ' ',
         'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_4f058d58458544a4971de55672468204/default/dark/3.0',
-        ' ',
         'https://static-cdn.jtvnw.net/emoticons/v2/302587322/default/dark/3.0',
-        ' ',
         'https://static-cdn.jtvnw.net/emoticons/v2/303446318/default/dark/3.0',
     ]
     compareArray(message, expected)
 }
 
-function test2AsURLWithEmotesCombined() {
-    const message = spliceMessage(
+function testAsURLWithEmotesCombined() {
+    const message = splitMessage(
         'EZ Clap hasPOGGERS hasPOGGIES too good',
         'xqc',
         undefined,
@@ -83,44 +80,34 @@ function test2AsURLWithEmotesCombined() {
     )
     const expected = [
         'https://cdn.7tv.app/emote/63071b80942ffb69e13d700f/4x.webp',
-        ' ',
         'https://cdn.7tv.app/emote/62fc0a0c4a75fd54bd3520a9/4x.webp',
-        ' ',
         'https://static-cdn.jtvnw.net/emoticons/v2/302587322/default/dark/3.0',
-        ' ',
         'https://static-cdn.jtvnw.net/emoticons/v2/303446318/default/dark/3.0',
-        ' too good',
+        'too',
+        'good',
     ]
     compareArray(message, expected)
 }
 
-function test2AsString() {
-    const message = spliceMessage('EZ Clap too good', 'xqc', emote => `emote:${emote.code}`)
-    const expected = ['emote:EZ', ' ', 'emote:Clap', ' too good']
+function testAsString() {
+    const message = splitMessage('EZ Clap too good', 'xqc', emote => `emote:${emote.code}`)
+    const expected = ['emote:EZ', 'emote:Clap', 'too', 'good']
     compareArray(message, expected)
 }
 
-function test2AsStringWithEmotes() {
-    const message = spliceMessage(
+function testAsStringWithEmotes() {
+    const message = splitMessage(
         'hasHi hasSlam hasPOGGERS hasPOGGIES',
         'xqc',
         emote => `emote:${emote.code}`,
         'emotesv2_8b228c4bd87b4305a4c05179353e751a:0-4/emotesv2_4f058d58458544a4971de55672468204:6-12/302587322:14-23/303446318:25-34'
     )
-    const expected = [
-        'emote:hasHi',
-        ' ',
-        'emote:hasSlam',
-        ' ',
-        'emote:hasPOGGERS',
-        ' ',
-        'emote:hasPOGGIES',
-    ]
+    const expected = ['emote:hasHi', 'emote:hasSlam', 'emote:hasPOGGERS', 'emote:hasPOGGIES']
     compareArray(message, expected)
 }
 
-function test2AsStringWithEmotesCombined() {
-    const message = spliceMessage(
+function testAsStringWithEmotesCombined() {
+    const message = splitMessage(
         'EZ Clap hasPOGGERS hasPOGGIES too good',
         'xqc',
         emote => `emote:${emote.code}`,
@@ -128,30 +115,28 @@ function test2AsStringWithEmotesCombined() {
     )
     const expected = [
         'emote:EZ',
-        ' ',
         'emote:Clap',
-        ' ',
         'emote:hasPOGGERS',
-        ' ',
         'emote:hasPOGGIES',
-        ' too good',
+        'too',
+        'good',
     ]
     compareArray(message, expected)
 }
 
-async function test2CacheError() {
-    const func = () => spliceMessage('EZ Clap too good', 'xqcow')
+async function testCacheError() {
+    const func = () => splitMessage('EZ Clap too good', 'xqcow')
     const expected = 'Channel xqcow not cached'
     await expectThrow(func, expected)
 }
 
-async function test2UsernameInvalid() {
-    const func = () => spliceMessage('EZ Clap too good', 'x')
+async function testUsernameInvalid() {
+    const func = () => splitMessage('EZ Clap too good', 'x')
     const expected = 'Invalid channel name: x'
     await expectThrow(func, expected)
 }
 
-async function test2UsernameError() {
+async function testUsernameError() {
     const func = () => reloadChannel('ajsybvjpulmatzyywhuzrlbyx')
     const expected = `Error fetching channel data for ajsybvjpulmatzyywhuzrlbyx
 Emote Error: User not found
@@ -159,7 +144,7 @@ Identifier Error: User not found`
     await expectThrow(func, expected)
 }
 
-async function test2UsernameError2() {
+async function testUsernameError2() {
     const func = () => initCache(['ajsybvjpulmatzyywhuzrlbyx'])
     const expected = `Error fetching channel data for ajsybvjpulmatzyywhuzrlbyx
 Emote Error: User not found

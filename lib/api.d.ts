@@ -1,6 +1,6 @@
 import { ChannelIdentifier, EmoteData } from './types';
 import { Services } from './util';
-export declare type ApiResponseTypes = ChannelIdentifier | EmoteData[];
+export type ApiResponseTypes = ChannelIdentifier | EmoteData[];
 export interface ApiResponseHeaders {
     limit: string | null;
     remaining: string | null;

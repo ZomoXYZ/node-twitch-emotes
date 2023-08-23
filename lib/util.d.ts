@@ -1,7 +1,7 @@
 import { ApiResponseHeaders } from './api';
 import { EmoteData } from './types';
-export declare type ServicesEach = 'twitch' | '7tv' | 'bttv' | 'ffz';
-export declare type Services = 'all' | ServicesEach[];
+export type ServicesEach = 'twitch' | '7tv' | 'bttv' | 'ffz';
+export type Services = 'all' | ServicesEach[];
 export declare function correctServices(services: Services): string;
 export declare const isChannelThrow: (channel: string) => string;
 export declare function uniqueArr<T>(arr: T | T[]): T[];

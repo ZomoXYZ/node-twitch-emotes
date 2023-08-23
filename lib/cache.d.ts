@@ -7,4 +7,4 @@ export declare function getChannel(channel: string): {
     identifier: ChannelIdentifier;
     emotes: EmoteData[];
 };
-export declare function getEmote(emote: string, channel?: string): EmoteData | null;
+export declare function getEmote(emote: string, channel?: string, noTwitch?: boolean): EmoteData | null;

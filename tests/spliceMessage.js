@@ -8,6 +8,10 @@ export default async function () {
     await initCache(['xqc'], { autoRefresh: false, cache: false, logApiRate: false })
 
     await runTest(testAsURL, 'As Url')
+
+    await runTest(testAsURLStrict, 'As Url Strict')
+    await runTest(testAsURLNotStrict, 'As Url Not Strict')
+
     await runTest(testAsURLWithEmotes, 'As Url With Emotes')
     await runTest(testAsURLWithEmotesCombined, 'As Url With Emotes Combined')
 
@@ -32,12 +36,25 @@ function testAsURL() {
     compareArray(message, expected)
 }
 
+function testAsURLStrict() {
+    const message = spliceMessage('xqcL', 'xqc')
+    const expected = ['xqcL']
+    compareArray(message, expected)
+}
+
+function testAsURLNotStrict() {
+    const message = spliceMessage('xqcL', 'xqc', undefined, undefined, false)
+    const expected = ['https://static-cdn.jtvnw.net/emoticons/v2/1035663/default/light/3.0']
+    compareArray(message, expected)
+}
+
 function testAsURLWithEmotes() {
     const message = spliceMessage(
         'hasHi hasSlam hasPOGGERS hasPOGGIES',
         'xqc',
         undefined,
-        'emotesv2_8b228c4bd87b4305a4c05179353e751a:0-4/emotesv2_4f058d58458544a4971de55672468204:6-12/302587322:14-23/303446318:25-34'
+        'emotesv2_8b228c4bd87b4305a4c05179353e751a:0-4/emotesv2_4f058d58458544a4971de55672468204:6-12/302587322:14-23/303446318:25-34',
+        true
     )
     const expected = [
         'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_8b228c4bd87b4305a4c05179353e751a/default/dark/3.0',

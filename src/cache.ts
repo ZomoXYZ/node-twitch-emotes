@@ -119,20 +119,25 @@ export function getChannel(channel: string) {
 }
 
 /**
+ * @param noTwitch if true, will not check for any native twitch emotes
+ *
  * @returns EmoteData: valid
  *
  * null: not an emote
  *
  * false: channel not cached
  */
-export function getEmote(emote: string, channel?: string): EmoteData | null {
+export function getEmote(emote: string, channel?: string, noTwitch = false): EmoteData | null {
     if (channel) {
         isChannelThrow(channel)
         channel = channel.toLowerCase()
         const emotes = ChannelEmotesCache[channel]
         if (emotes) {
             const emoteData = emotes.find(e => e.code === emote)
-            if (emoteData) return emoteData
+            if (emoteData) {
+                if (noTwitch && emoteData.provider === 0) return null
+                return emoteData
+            }
         } else {
             throw new Error(`Channel ${channel} not cached`)
         }

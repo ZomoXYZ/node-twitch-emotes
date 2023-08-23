@@ -10,25 +10,27 @@ export * from './util'
 /**
  *
  * @param callback default callback is `highestQuality`
- * @param withEmtoes the `emotes` tag from the twitch message
+ * @param withEmotes the `emotes` tag from the twitch message
+ * @param strictTwitchEmotes if true, will not check for any native twitch emotes, only the ones in `withEmotes`
  * @returns
  */
 export function spliceMessage<T>(
     message: string,
     channel: string,
     callback: (emote: EmoteData) => string | T = highestQuality,
-    withEmtoes?: string
+    withEmotes?: string,
+    strictTwitchEmotes = false
 ): (string | T)[] {
     isChannelThrow(channel)
 
     var messageSpl: (string | EmoteData)[] = message.split(' '),
         arr: (string | T)[] = []
 
-    if (withEmtoes) {
+    if (withEmotes) {
         messageSpl = []
         var lastChar = 0
 
-        withEmtoes.split('/').forEach(spl => {
+        withEmotes.split('/').forEach(spl => {
             const [id, range] = spl.split(':')
             const [start, end] = range.split('-').map(Number)
             const emote: EmoteData = {
@@ -66,7 +68,7 @@ export function spliceMessage<T>(
     for (let i = 0; i < messageSpl.length; i++) {
         const word = messageSpl[i]
 
-        let emote = typeof word === 'string' ? getEmote(word, channel) : word
+        let emote = typeof word === 'string' ? getEmote(word, channel, strictTwitchEmotes) : word
 
         if (emote) {
             arr[i] = callback(emote)

@@ -10,7 +10,19 @@
     "version": "1.1.0",
     "author": "",
     "license": "ISC",
-    "description": "",
+    "description": "splice twitch emotes from a message string",
+    "keywords": [
+        "twitch",
+        "emotes",
+        "emote",
+        "splice",
+        "split",
+        "parse",
+        "emote parse",
+        "twitch emotes",
+        "twitch emote",
+        "twitch emote parse"
+    ],
     "repository": {
         "type": "git",
         "url": "git@git.zomo.dev:zomo/node-twitch-emotes.git"

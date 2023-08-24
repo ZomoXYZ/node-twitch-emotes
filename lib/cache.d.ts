@@ -1,6 +1,6 @@
 import { ChannelIdentifier, EmoteData } from './types';
-import { SettingsOptions } from './settings';
-export declare function initCache(channels?: string[], settings?: SettingsOptions): Promise<void>;
+import { Settings } from './settings';
+export declare function initCache(channels?: string[], settings?: Partial<Settings>): Promise<void>;
 export declare function reloadGlobalEmotes(): Promise<void>;
 export declare function reloadChannel(channel: string): Promise<void>;
 export declare function getChannel(channel: string): {

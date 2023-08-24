@@ -1,6 +1,8 @@
-# node-twitch-emotes
+# twitch-emote
 
-`npm i ZomoXYZ/node-twitch-emotes`
+```bash
+npm i twitch-emote
+```
 
 ## initialization
 
@@ -97,7 +99,7 @@ export enum Provider {
 simple
 
 ```ts
-import { initCache, spliceMessage } from 'twitch-emotes'
+import { initCache, spliceMessage } from 'twitch-emote'
 
 await initCache(['xqc'])
 
@@ -129,7 +131,7 @@ console.log(messageWords)
 advanced
 
 ```ts
-import { initCache, spliceMessage } from 'twitch-emotes'
+import { initCache, spliceMessage } from 'twitch-emote'
 
 await initCache(['xqc'])
 

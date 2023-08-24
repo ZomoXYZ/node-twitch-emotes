@@ -6,5 +6,5 @@
         "outDir": "../JavaScript",
         "strict": true
     },
-    "exclude": ["../../lib"]
+    "exclude": ["twitch-emotes"]
 }

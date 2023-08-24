@@ -2,6 +2,22 @@
 
 `npm i ZomoXYZ/node-twitch-emotes`
 
+## initialization
+
+```ts
+async function initCache(
+    channels?: string[],
+    settings?: Partial<Settings>
+): void
+```
+
+this function **must be ran first** (and awaited) before `spliceMessage` or `splitMessage` will work.
+
+| argument   | type                | default | description                    |
+|------------|---------------------|---------|--------------------------------|
+| `channels` | `string[]`          | `[]`    | array of channel names to load |
+| `settings` | `Partial<Settings>` | `{}`    | optional settings              |
+
 ## usage
 
 ```ts
@@ -32,17 +48,29 @@ function splitMessage<T>(
 
 example: `["emote:EZ", "emote:clap", "too", "good"]`
 
-| argument             | type                         | default                    | description  |
-|----------------------|------------------------------|----------------------------|--------------|
-| `message`            | `string`                     |                            | chat message |
-| `channel`            | `string`                     |                            | channel name |
-| `callback`           | `(EmoteData) => string \| T` | highest quality url string | convert the emote data into something |
+| argument             | type                         | default                    | description                               |
+|----------------------|------------------------------|----------------------------|-------------------------------------------|
+| `message`            | `string`                     |                            | chat message                              |
+| `channel`            | `string`                     |                            | channel name                              |
+| `callback`           | `(EmoteData) => string \| T` | highest quality url string | convert the emote data into something     |
 | `withEmotes`         | `string`                     | `""`                       | native twitch emotes given via an IRC tag |
 | `strictTwitchEmotes` | `boolean`                    | `false`                    | if `true`, native twitch emotes will only be applied through `withEmotes`; otherwise when `false`, all twitch and channel emotes will be checked for in the message (i.e. non-subs appear to have sub emotes) |
 
 ## types
 
+settings
+
+| key                 | type      | default              | description                                                  |
+|---------------------|-----------|----------------------|--------------------------------------------------------------|
+| `autoRefresh`       | `boolean` | `true`               | if `true`, run indefinitely and regularly check for new data |
+| `refreshInterval`   | `number`  | `300000` (5 minutes) | time in milliseconds                                         |
+| `cache`             | `boolean` | `true`               | caching on the disk                                          |
+| `cacheDir`          | `string`  | `./cache`            | directory for cache                                          |
+| `logApiRate`        | `boolean` | `true`               | log data about api rate limits                               |
+| `maxRetryRateLimit` | `number`  | `1`                  | maximum retry attempts when rate limited (the request retries again after the rate limit time so `1` should suffice) |
+
 ```ts
+
 export interface EmoteData {
     provider: Provider
     code: string

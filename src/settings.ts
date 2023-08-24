@@ -1,21 +1,4 @@
-export interface SettingsOptions {
-    /** default: true */
-    autoRefresh?: boolean
-    /** default: 5 minutes */
-    refreshInterval?: number
-    /** caching on the disk
-     *
-     * default: true
-     */
-    cache?: boolean
-    /** default: true */
-    cacheDir?: string
-    /** default: true */
-    logApiRate?: boolean
-    /** default: 1 */
-    maxRetryRateLimit?: number
-}
-export interface Settings extends SettingsOptions {
+export interface Settings {
     autoRefresh: boolean
     refreshInterval: number
     cache: boolean
@@ -33,7 +16,7 @@ var Settings: Settings = {
     maxRetryRateLimit: 1,
 }
 
-export function setSettings(adjustSettings: SettingsOptions) {
+export function setSettings(adjustSettings: Partial<Settings>) {
     Settings = Object.assign(Settings, adjustSettings) as Settings
 }
 

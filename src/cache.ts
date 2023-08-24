@@ -8,7 +8,7 @@ import {
     saveGlobalCache,
 } from './cache_fs'
 import { asyncEach, isChannelThrow, logRate, repeat } from './util'
-import { getSetting, setSettings, SettingsOptions } from './settings'
+import { getSetting, setSettings, Settings } from './settings'
 
 var GlobalEmotesCache: EmoteData[] = [],
     Initiated = false,
@@ -20,7 +20,7 @@ var GlobalEmotesCache: EmoteData[] = [],
  * @param channels ensure specific channels are loaded (all cached data will be loaded unless disabled in settings)
  * @returns
  */
-export async function initCache(channels: string[] = [], settings: SettingsOptions = {}) {
+export async function initCache(channels: string[] = [], settings: Partial<Settings> = {}) {
     channels = channels.map(ch => ch.toLowerCase()).filter(ch => !(ch in ChannelEmotesCache))
 
     if (!Initiated) {

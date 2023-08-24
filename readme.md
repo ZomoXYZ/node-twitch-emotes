@@ -20,7 +20,8 @@ this function **must be ran first** (and awaited) before `spliceMessage` or `spl
 | `channels` | `string[]`          | `[]`    | array of channel names to load |
 | `settings` | `Partial<Settings>` | `{}`    | optional settings              |
 
-`Settings`
+<!-- markdownlint-disable-next-line  -->
+#### `Settings`
 
 | key                 | type      | default              | description                                                  |
 |---------------------|-----------|----------------------|--------------------------------------------------------------|

@@ -37,7 +37,7 @@ function spliceMessage<T>(
     channel: string,
     callback?: (emote: EmoteData) => string | T,
     withEmotes?: string,
-    strictTwitchEmotes?
+    strictTwitchEmotes?: boolean
 ): (string | T)[]
 ```
 
@@ -51,7 +51,7 @@ function splitMessage<T>(
     channel: string,
     callback?: (emote: EmoteData) => string | T,
     withEmotes?: string,
-    strictTwitchEmotes?
+    strictTwitchEmotes?: boolean
 ): (string | T)[]
 ```
 

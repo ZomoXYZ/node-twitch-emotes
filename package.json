@@ -3,7 +3,7 @@
     "scripts": {
         "prettier": "prettier --write src tests",
         "build": "npm run prettier && tsc",
-        "buildexamples": "cd examples/TypeScript && tsc && prettier --write ..",
+        "buildexamples": "cd examples && npm run build && prettier --write .",
         "test": "node tests"
     },
     "name": "twitch-emotes",

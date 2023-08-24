@@ -1,4 +1,4 @@
-import { highestQuality, initCache, spliceMessage } from 'twitch-emotes'
+import { highestQuality, initCache, splitMessage } from 'twitch-emotes'
 
 await initCache(['xqc'], {
     autoRefresh: false,
@@ -11,7 +11,7 @@ interface EmoteImage {
     url: string
 }
 
-const message = spliceMessage(
+const message = splitMessage(
     'EZ Clap too good',
     'xqc',
     (emote): EmoteImage => ({
@@ -20,9 +20,9 @@ const message = spliceMessage(
     })
 )
 
-message.forEach(part => {
-    if (typeof part === 'string') {
-        // string
+message.forEach(word => {
+    if (typeof word === 'string') {
+        // word
     } else {
         // emote
     }

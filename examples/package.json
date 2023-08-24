@@ -1,0 +1,9 @@
+{
+    "type": "module",
+    "scripts": {
+        "build": "cd TypeScript && tsc && prettier --write .."
+    },
+    "dependencies": {
+        "twitch-emotes": "file:.."
+    }
+}

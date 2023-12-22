@@ -1,54 +1,27 @@
 lockfileVersion: 5.4
 
 specifiers:
+    prettier: ^2.8.8
     twitch-emotes: file:..
 
 dependencies:
     twitch-emotes: file:..
 
+devDependencies:
+    prettier: 2.8.8
+
 packages:
-    /fs-extra/10.1.0:
+    /prettier/2.8.8:
         resolution:
             {
-                integrity: sha512-oRXApq54ETRj4eMiFzGnHWGy+zo5raudjuxN0b8H7s/RU2oW0Wvsx9O0ACRN/kRq9E8Vu/ReskGB5o3ji+FzHQ==,
+                integrity: sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==,
             }
-        engines: { node: '>=12' }
-        dependencies:
-            graceful-fs: 4.2.11
-            jsonfile: 6.1.0
-            universalify: 2.0.0
-        dev: false
-
-    /graceful-fs/4.2.11:
-        resolution:
-            {
-                integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==,
-            }
-        dev: false
-
-    /jsonfile/6.1.0:
-        resolution:
-            {
-                integrity: sha512-5dgndWOriYSm5cnYaJNhalLNDKOqFwyDB/rr1E9ZsGciGvKPs8R2xYGCacuf3z6K1YKDz182fd+fY3cn3pMqXQ==,
-            }
-        dependencies:
-            universalify: 2.0.0
-        optionalDependencies:
-            graceful-fs: 4.2.11
-        dev: false
-
-    /universalify/2.0.0:
-        resolution:
-            {
-                integrity: sha512-hAZsKq7Yy11Zu1DE0OzWjw7nnLZmJZYTDZZyEFHZdUhV8FkH5MCfoU1XMaxXovpyW5nq5scPqq0ZDP9Zyl04oQ==,
-            }
-        engines: { node: '>= 10.0.0' }
-        dev: false
+        engines: { node: '>=10.13.0' }
+        hasBin: true
+        dev: true
 
     file:..:
         resolution: { directory: .., type: directory }
-        name: twitch-emotes
-        version: 1.1.0
-        dependencies:
-            fs-extra: 10.1.0
+        name: twitch-emote
+        version: 1.1.3
         dev: false

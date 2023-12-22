@@ -3,6 +3,9 @@
     "scripts": {
         "build": "cd TypeScript && tsc && prettier --write .."
     },
+    "devDependencies": {
+        "prettier": "^2.8.8"
+    },
     "dependencies": {
         "twitch-emotes": "file:.."
     }

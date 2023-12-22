@@ -1,6 +1,7 @@
-import { access, mkdir, readJson, writeJson } from 'fs-extra'
-import { getSetting } from './settings'
+import { access, mkdir } from 'fs/promises'
 import { join } from 'path'
+import { readJson, writeJson } from './fs_json'
+import { getSetting } from './settings'
 import { ChannelIdentifier, EmoteData } from './types'
 import { isChannelThrow, uniqueArr } from './util'
 

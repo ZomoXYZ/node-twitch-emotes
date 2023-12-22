@@ -1,6 +1,7 @@
 import { initCache, splitMessage, reloadChannel } from '../lib/index.js'
 import { runTest } from './util/run.js'
 import { compareArray, expectThrow } from './util/expect.js'
+import { REGEX_TWITCH, REGEX_7TV } from './util/util.js'
 
 export default async function () {
     //set autoRefresh to false so the script ends naturally
@@ -28,8 +29,8 @@ export default async function () {
 function testAsURL() {
     const message = splitMessage('EZ Clap too good', 'xqc')
     const expected = [
-        'https://cdn.7tv.app/emote/63071b80942ffb69e13d700f/4x.webp',
-        'https://cdn.7tv.app/emote/62fc0a0c4a75fd54bd3520a9/4x.webp',
+        REGEX_7TV,
+        REGEX_7TV,
         'too',
         'good',
     ]
@@ -44,13 +45,13 @@ function testAsURLStrict() {
 
 function testAsURLNotStrict() {
     const message = splitMessage('xqcL', 'xqc', undefined, undefined, false)
-    const expected = ['https://static-cdn.jtvnw.net/emoticons/v2/1035663/default/light/3.0']
+    const expected = [REGEX_TWITCH]
     compareArray(message, expected)
 }
 
 function testAsURLStrictDefault() {
     const message = splitMessage('xqcL', 'xqc')
-    const expected = ['https://static-cdn.jtvnw.net/emoticons/v2/1035663/default/light/3.0']
+    const expected = [REGEX_TWITCH]
     compareArray(message, expected)
 }
 
@@ -63,10 +64,10 @@ function testAsURLWithEmotes() {
         true
     )
     const expected = [
-        'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_8b228c4bd87b4305a4c05179353e751a/default/dark/3.0',
-        'https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_4f058d58458544a4971de55672468204/default/dark/3.0',
-        'https://static-cdn.jtvnw.net/emoticons/v2/302587322/default/dark/3.0',
-        'https://static-cdn.jtvnw.net/emoticons/v2/303446318/default/dark/3.0',
+        REGEX_TWITCH,
+        REGEX_TWITCH,
+        REGEX_TWITCH,
+        REGEX_TWITCH,
     ]
     compareArray(message, expected)
 }
@@ -79,10 +80,10 @@ function testAsURLWithEmotesCombined() {
         '302587322:8-17/303446318:19-28'
     )
     const expected = [
-        'https://cdn.7tv.app/emote/63071b80942ffb69e13d700f/4x.webp',
-        'https://cdn.7tv.app/emote/62fc0a0c4a75fd54bd3520a9/4x.webp',
-        'https://static-cdn.jtvnw.net/emoticons/v2/302587322/default/dark/3.0',
-        'https://static-cdn.jtvnw.net/emoticons/v2/303446318/default/dark/3.0',
+        REGEX_7TV,
+        REGEX_7TV,
+        REGEX_TWITCH,
+        REGEX_TWITCH,
         'too',
         'good',
     ]

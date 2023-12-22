@@ -1,6 +1,9 @@
 import { relative } from 'path'
 import { __dirname } from '../index.js'
 
+export const REGEX_TWITCH = /^https:\/\/static-cdn\.jtvnw\.net\/emoticons\/v2\/(?:\d+|emotesv2_[0-9a-f]+)\/default\/\w+\/\d\.\d$/i
+export const REGEX_7TV = /^https:\/\/cdn\.7tv\.app\/emote\/[0-9a-f]+\/\dx\.\w+$/i
+
 export const indentData = (prefix, json) =>
     JSON.stringify(json, null, 2)
         .split('\n')
@@ -19,7 +22,7 @@ export const indentLen = (len, str) =>
         .map((line, i) => `${' '.repeat(len)}${line}`)
         .join('\n')
 
-export class ExpectError extends Error {}
+export class ExpectError extends Error { }
 
 const fixStack = err => {
     let reachedTests = false

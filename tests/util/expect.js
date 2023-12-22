@@ -14,7 +14,14 @@ ${indentData('Given:    ', given)}`)
     }
 
     expected.forEach((val, i) => {
-        if (val !== given[i]) {
+        if (val.constructor == RegExp) {
+            if (!val.test(given[i])) {
+                throw new ExpectError(`Value Error at index ${i}: ${val} does not define ${given[i]}
+${indentData('Expected: ', expected)}
+${indentData('Given:    ', given)}`)
+            }
+            return
+        } else if (val !== given[i]) {
             throw new ExpectError(`Value Error at index ${i}: ${val} !== ${given[i]}
 ${indentData('Expected: ', expected)}
 ${indentData('Given:    ', given)}`)

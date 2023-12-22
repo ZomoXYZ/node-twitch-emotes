@@ -34,29 +34,41 @@ async function handleResponse<T>(
 
     let res = await fetch(url)
     let code = res.status
-    let data = await res.json()
-    let error = null
+    let headers = {
+        limit: res.headers.get('X-Ratelimit-Limit'),
+        remaining: res.headers.get('X-Ratelimit-Remaining'),
+        reset: res.headers.get('X-Ratelimit-Reset'),
+    }
+
+    let data = null
+    try {
+        data = await res.json()
+    } catch (e) {
+        return {
+            ...headers,
+            data: null,
+            error: (e as Error).message,
+        }
+    }
 
     if (code === 429) {
         //rate limited
         let retry = res.headers.get('Retry-After') || '20' //20 seconds is the max rate limit time
         let time = parseInt(retry) * 1000
         await sleep(time)
-        return handleResponse(url, ++retryCount, {
-            limit: res.headers.get('X-Ratelimit-Limit'),
-            remaining: res.headers.get('X-Ratelimit-Remaining'),
-            reset: res.headers.get('X-Ratelimit-Reset'),
-        })
+        return await handleResponse(url, ++retryCount, headers)
     } else if (code === 400 || 'error' in data) {
-        error = data.error
+        return {
+            ...headers,
+            data: null,
+            error: data.error || 'Unknown error',
+        }
     }
 
     return {
-        limit: res.headers.get('X-Ratelimit-Limit'),
-        remaining: res.headers.get('X-Ratelimit-Remaining'),
-        reset: res.headers.get('X-Ratelimit-Reset'),
-        data: error ? null : data,
-        error,
+        ...headers,
+        data: data,
+        error: null,
     }
 }
 

@@ -30,6 +30,7 @@ export async function initCache(channels: string[] = [], settings: Partial<Setti
 
         setSettings(settings)
 
+        // Load cache from disk
         if (getSetting('cache')) {
             const globalData = await loadGlobalCache()
             globalTimestamp = globalData.timestamp
@@ -40,6 +41,7 @@ export async function initCache(channels: string[] = [], settings: Partial<Setti
             const channelsData = await loadChannels()
             if (channelsData) await runChannelData(channelsData)
         }
+
         await repeat(globalTimestamp, () => reloadGlobalEmotes())
     }
 

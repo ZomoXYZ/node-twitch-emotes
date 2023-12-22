@@ -34,15 +34,22 @@ export const highestQuality = ({ urls }: EmoteData) =>
 export const asyncEach = async <T>(arr: T[], callback: (item: T) => Promise<void>) =>
     Promise.all(arr.map(callback))
 
-export async function repeatBase(
+async function repeatBase(
     every: number,
     starting: number,
     once: boolean,
     callback: () => void | Promise<void>
 ) {
+    async function safeCallback() {
+        try {
+            await callback()
+        } catch (e) {
+            console.warn(`Auto Refresh: caught following error, skipping this refresh\n${e}`)
+        }
+    }
     async function afterTimeout() {
         await callback()
-        if (!once) setInterval(() => callback(), every)
+        if (!once) setInterval(() => safeCallback(), every)
     }
 
     let timeout = starting + every - Date.now()
@@ -53,8 +60,8 @@ export async function repeatBase(
     }
 }
 
-export const repeat = (starting: number, callback: () => void) =>
-    repeatBase(getSetting('refreshInterval'), starting, !getSetting('autoRefresh'), callback)
+export const repeat = (startTime: number, callback: () => void) =>
+    repeatBase(getSetting('refreshInterval'), startTime, !getSetting('autoRefresh'), callback)
 
 export const logRate = (type: string, { limit, remaining, reset }: ApiResponseHeaders) => {
     if (!getSetting('logApiRate')) return
